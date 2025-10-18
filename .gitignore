@@ -1,0 +1,47 @@
+# Vivado project artifacts
+*.xpr
+*.jou
+*.log
+*.str
+*.cache/
+*.runs/
+*.sim/
+*.hw/
+*.ip_user_files/
+*.webtalk/
+*.gen/
+*.restore/
+*.wcfg
+*.wdb
+*.dcp
+*.ltx
+
+# Vitis build artifacts
+*.xo
+*.xclbin
+*.log
+*.jou
+*.xml
+*.json
+*.o
+*.obj
+*.exe
+*.elf
+*.bin
+*.map
+*.vitis/
+_build/
+_build.hw/
+_build.sw/
+build/
+.vscode/
+*.db
+*.pb
+
+# General
+*.backup
+*.tmp
+*.bak
+*.swp
+*.swo
+*.DS_Store
