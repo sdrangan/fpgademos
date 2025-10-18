@@ -13,7 +13,7 @@ Wrap the bitstream into a PYNQ overlay, enabling seamless interaction with the h
 
 While many of the demos are designed to be broadly applicable across FPGA platforms, several will focus on **real-time wireless communications processing** using the [RFSoC 4x2 board](https://www.amd.com/en/corporate/university-program/aup-boards/rfsoc4x2.html). These demos showcase the unique capabilities of RFSoC for high-speed data conversion and streaming, but the core concepts—modular IP design, AXI-based integration, simulation-driven development, and Python interaction—are generalizable to a wide range of FPGA workflows. Whether you're targeting RFSoC, Zynq, or other platforms, the techniques and structure in these demos are meant to build transferable intuition and hands-on fluency.
 
-## Demonstartions
+## Demonstrations
 
 Right now, we are just creating our first demo.
 
