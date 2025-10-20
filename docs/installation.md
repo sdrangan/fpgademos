@@ -49,3 +49,23 @@ When everything is installed, `cd` to the directory where you want to run the de
 ~~~
 
 
+## Launching Vivado
+
+Once you have installed Vivado, it can launched as follows from any terminal window:
+
+* First`cd` to where Vivado is installed.  For the NYU machine, this is `/tools/Xilinx/Vivado/2024.1`
+* Run `source settings64.sh`
+* `cd` to the directory were you want to run the Vivado project.
+* Run `vivado` from the command line.
+* The Vivado gui should launch
+
+## Launching Vitis
+
+Launching Vitis follows almost the same sequence:
+
+* First `cd` to where Vitis is installed.  For the NYU machine, this is `/tools/Xilinx/Vitis_HLS/2024.1`
+* Run `source settings64.sh`
+* `cd` to the directory were you want to run the Vivado project.
+* Run `vivado` from the command line.
+* The Vivado gui should launch
+
