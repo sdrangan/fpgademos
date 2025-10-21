@@ -1,7 +1,7 @@
 ---
 title: Installing Vitis and Vivado
-parent: FPGA Demos
-nav_order: 2
+parent: Common
+nav_order: 3
 has_children: false
 ---
 
