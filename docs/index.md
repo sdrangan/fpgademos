@@ -1,3 +1,8 @@
+---
+title: FPGA Demos
+nav_order: 1
+---
+
 # FPGA Demos
 
 The long-term goal of this repository is to create a series of modular FPGA demos designed to teach hardware/software co-design using Vitis, Vivado, PYNQ, and Python-based simulation.  In going through these demos, you will learn:
