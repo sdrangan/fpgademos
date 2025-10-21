@@ -1,3 +1,8 @@
+---
+title: Scalar Adder
+nav_order: 2
+---
+
 # Scalar Adder
 
 This demo is the *hello world* of the FPGA workflow using Vitis, Vivado, and PYNQ. Specifically, we will build a toy *accelerator*, a scalar adder that adds two numbers.  The accelerator will run in the FPGA.   Obviously, this function is so simple there is no reason to use an FPGA.  However the process introduces the essential steps for hardware/software co-design and gives you a reproducible starting point for more advanced projects.
