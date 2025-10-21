@@ -1,0 +1,17 @@
+title: "FPGA Demos"
+description: "Modular, reproducible hardware/software co-design labs"
+theme: just-the-docs
+baseurl: "/fpgademos" # Only needed if using a project page
+url: "https://sdrangan.github.io"
+
+# Navigation settings
+nav_sort: case_insensitive
+search_enabled: true
+
+# Markdown options
+markdown: kramdown
+kramdown:
+  input: GFM
+
+# Optional: GitHub repo link
+github_repo_url: "https://github.com/sdrangan/fpgademos"
