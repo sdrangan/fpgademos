@@ -1,7 +1,7 @@
 ---
 title: Installing Vitis and Vivado
-parent: Common
-nav_order: 3
+parent: Installation and Set-Up
+nav_order: 1
 has_children: false
 ---
 
