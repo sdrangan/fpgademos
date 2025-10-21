@@ -1,12 +1,12 @@
 ---
-title: Common
+title: Installation and Set-Up
 parent: FPGA Demos
-nav_order: 2
+nav_order: 1
 has_children: true
 ---
 
-# Common Tasks
+# Setting Up the System
 
-Some links to some common tasks you may need (I will add more as needed):
+Some links to some tasks to help you get set up and configure the system (I will add more as needed):
 
 * [Installing Vitis and Vivado](./installation.md)
