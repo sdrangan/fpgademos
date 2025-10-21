@@ -1,15 +1,17 @@
 ---
-title: Scalar Adder
+title: Getting started
+parent: FPGA Demos
 nav_order: 2
+has_children: true
 ---
 
-# Scalar Adder
+# Getting Started with a Scalar Adder
 
 This demo is the *hello world* of the FPGA workflow using Vitis, Vivado, and PYNQ. Specifically, we will build a toy *accelerator*, a scalar adder that adds two numbers.  The accelerator will run in the FPGA.   Obviously, this function is so simple there is no reason to use an FPGA.  However the process introduces the essential steps for hardware/software co-design and gives you a reproducible starting point for more advanced projects.
 
 By completing this demo, you will learn how to:
 
-*  Design and synthesize a simple **Vitis IP** that performs a basic mathematical operation using an **AXI-Lite interface**
+* Design and synthesize a simple **Vitis IP** that performs a basic mathematical operation using an **AXI-Lite interface**
 * Create a minimal **Vivado project** that integrates the IP
 * Synthesize the design to generate a **bitstream**
 * Build a **PYNQ overlay** that loads the bitstream onto the FPGA board
