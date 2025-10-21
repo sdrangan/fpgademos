@@ -1,4 +1,10 @@
-# 🛠️ Installing Vivado and Vitis for RFSoC 4x2
+---
+title: Installing Vitis and Vivado
+nav_order: 2
+has_children: false
+---
+
+# Installing Vivado and Vitis for RFSoC 4x2
 
 These instructions are for installing Vivado and Vitis on an **Ubuntu machine** for use with the [RFSoC 4x2 board](https://www.amd.com/en/corporate/university-program/aup-boards/rfsoc4x2.html). While many demos in this repo are broadly applicable across FPGA platforms, several focus on **real-time wireless communications processing** using RFSoC. If you're using a different board, you'll need to adjust the steps accordingly.
 
@@ -65,7 +71,7 @@ Launching Vitis follows almost the same sequence:
 
 * First `cd` to where Vitis is installed.  For the NYU machine, this is `/tools/Xilinx/Vitis_HLS/2024.1`
 * Run `source settings64.sh`
-* `cd` to the directory were you want to run the Vivado project.
-* Run `vivado` from the command line.
-* The Vivado gui should launch
+* `cd` to the directory were you want to run the Vitis project.
+* Run `vitis_hls` from the command line.
+* The Vitis Unified IDE gui should launch
 
