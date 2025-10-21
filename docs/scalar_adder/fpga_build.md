@@ -1,14 +1,21 @@
-# Building the Vitis IP and Vivado FPGA project
+---
+title: Building the FPGA accelerator
+parent: Getting started
+nav_order: 3
+has_children: false
+---
+
+# Building the FPGA accelerator
 
 These instructions show how to:
 
 * Create the Vitis IP for the simple scalar adder function.
-* Build a barebones Vivado project with the Zynq UltraScale SOC
+* Build a barebones Vivado project with the Zynq UltraScale+ MPSOC
 * Integrate the Vitis IP into the project
 * Generate a bitstream for the FPGA
 * Create a PYNQ overlay to access the Vitis IP running on the FPGA from python
 
-The final overlay will then be used by the (notebooks)[../notebooks/scalar_add.ipynb].
+The final overlay will then be used by the (notebooks)[{{ site.baseurl }}/scalar_adder/notebooks/scalar_add.ipynb].
 
 The instructions below show how to build the entire project from scratch.  But, at the end, I have provided instructions to generate the Vitis and Vivado projects from TCL files and the files in the github repo.
 
@@ -16,7 +23,7 @@ The instructions below show how to build the entire project from scratch.  But, 
 
 We first create an Vivado project with the MPSOC:
 
-* Launch Vivado (see the [installation instructions](../../docs/installation.md#launching-vivado)):
+* Launch Vivado (see the [installation instructions]({{ site.baseurl }}/docs/installation.md#launching-vivado)):
 * Select the menu option `File->Project->New...`.  
    * For the project name, use `scalar_adder_vivado`.  
    * In location, use the directory `fpgademos/scalar_adder`.  The Vivado project will then be stored in `scalar_adder/scalar_adder_vivado`.
@@ -31,7 +38,7 @@ We first create an Vivado project with the MPSOC:
 
 ## Creating the Vitis HLS Project
 
-* Launch Vitis (see the [installation instructions](../../docs/installation.md#launching-vitis)):
+* Launch Vitis (see the [installation instructions]({{ site.baseurl }}/docs/installation.md#launching-vitis)):
 * Select `Open Workspace`.  Go to the directory `fpgademos\scalar_adder`.  This is where we will put the workspace.  `Vitis_HLS` will reopen.
 * Select `Create component->Create empty HLS component`.  You will walk through the following six steps:
     * For `Name and location`, select component name as `scalar_add_vitis`
