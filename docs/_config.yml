@@ -1,6 +1,6 @@
 title: "FPGA Demos"
 description: "Modular, reproducible hardware/software co-design labs"
-theme: just-the-docs
+remote_theme: just-the-docs/just-the-docs
 baseurl: "/fpgademos" # Only needed if using a project page
 url: "https://sdrangan.github.io"
 
