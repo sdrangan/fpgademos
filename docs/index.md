@@ -1,6 +1,7 @@
 ---
 title: FPGA Demos
 nav_order: 1
+has_children: true
 ---
 
 # FPGA Demos
