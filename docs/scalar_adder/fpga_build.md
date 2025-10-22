@@ -38,7 +38,7 @@ We first create an Vivado project with the MPSOC:
 
 ## Creating the Vitis HLS Project
 
-* Launch Vitis (see the [installation instructions]({{ site.baseurl }}/docs/installation.md#launching-vitis)):
+* Launch Vitis (see the [installation instructions]({{ site.baseurl }}/docs/installation.md#launching-vitis))
 * Select `Open Workspace`.  Go to the directory `fpgademos\scalar_adder`.  This is where we will put the workspace.  `Vitis_HLS` will reopen.
 * Select `Create component->Create empty HLS component`.  You will walk through the following six steps:
     * For `Name and location`, select component name as `scalar_add_vitis`
