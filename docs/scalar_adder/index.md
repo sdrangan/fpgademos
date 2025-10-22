@@ -15,7 +15,6 @@ By completing this demo, you will learn how to:
 * Create a minimal **Vivado project** that integrates the IP
 * Synthesize the design to generate a **bitstream**
 * Build a **PYNQ overlay** that loads the bitstream onto the FPGA board
-* Interact with the IP from **Python**, using a simple AXI-Lite transaction sequence
 
 This demo is designed to be modular, reproducible, and beginner-friendly—perfect for building intuition before diving into DMA, interrupts, or vectorized designs.
 
