@@ -48,3 +48,4 @@ void vec_mult(int *a, int *b, int *c, int n) {
 #pragma HLS PIPELINE
         c[i] = c_buf[i];
     }
+}
