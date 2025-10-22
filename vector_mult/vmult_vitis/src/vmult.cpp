@@ -42,8 +42,7 @@ void vec_mult(int *a, int *b, int *c, int n) {
             c_buf[i + j] = a_buf[i + j] * b_buf[i + j];
         }
     }
-
-
+    
     // Store results back to global memory
     for (int i = 0; i < n; i++) {
 #pragma HLS PIPELINE
