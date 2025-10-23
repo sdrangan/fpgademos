@@ -7,8 +7,8 @@ has_children: true
 
 # Loop Optimization
 
-Hardware acceleration is particularly strong when repeating some task multiple times -- equivalent to a loop in software.
-While a standard processor can only perform one task in each clock cycle, hardware can replicate many units to operate in parallel.  The challenge is how to coordinate mutliple units and ensure they are fully utilized.  In this unit, we will illustrate these concepts with a simple vector multiplication.   
+Hardware acceleration can provide particularly significant gains when repeating some task multiple times -- equivalent to a loop in software.
+A conventional single unit processor can only perform one task in each clock cycle.  Custom hardware, in contrast, can replicate many units to operate in parallel.  The challenge is how to coordinate mutliple units and ensure they are fully utilized.  In this unit, we will illustrate these concepts with a simple vector multiplication.   
 
 In going through this unit, you will learn to:
 - **Identify and synthesize loop constructs** in Vitis HLS for hardware implementation

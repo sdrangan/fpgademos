@@ -53,4 +53,4 @@ But, before we synthesize the Vitis IP, let's make sure that the model is functi
 
 ---
 
-Go to the [initial synthesization](./synth.md).
+Go to the [initial synthesis](./synth.md).
