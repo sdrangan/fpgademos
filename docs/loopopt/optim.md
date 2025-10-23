@@ -5,16 +5,6 @@ nav_order: 3
 has_children: false
 ---
 
-# Pipelining and unrolling
-Absolutely, Sundeep — here’s a scaffolded draft for your “Pipelining and Unrolling” section that builds naturally on the previous synthesis page and sets students up to explore performance tuning:
-
----
-title: Pipelining and unrolling  
-parent: Loop optimization  
-nav_order: 3  
-has_children: false  
----
-
 # Pipelining and Unrolling
 
 In the previous section, we synthesized a simple loop without any optimization. Now we’ll explore two powerful techniques that can dramatically improve performance: **loop pipelining** and **loop unrolling**.
