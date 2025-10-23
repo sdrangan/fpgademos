@@ -1,7 +1,9 @@
 // Vector multiplication function
 #include "../include/vmult.h"
+#include <string.h>
 
-void vec_mult(int *a, int *b, int *c, int n) {
+
+void vec_mult(data_t *a, data_t *b, data_t *c, int n) {
 
     // HLS pragmas for optimization
 #pragma HLS INTERFACE m_axi port=a offset=slave bundle=gmem
@@ -15,8 +17,8 @@ void vec_mult(int *a, int *b, int *c, int n) {
 
 
     // Buffering to optimize memory access
-    int a_buf[MAX_SIZE], b_buf[MAX_SIZE];
-    int c_buf[MAX_SIZE];
+    data_t a_buf[MAX_SIZE], b_buf[MAX_SIZE];
+    data_t c_buf[MAX_SIZE];
 
 #pragma HLS ARRAY_PARTITION variable=a_buf type=cyclic factor=UNROLL_FACTOR  dim=1
 #pragma HLS ARRAY_PARTITION variable=b_buf type=cyclic factor=UNROLL_FACTOR  dim=1
@@ -30,26 +32,25 @@ void vec_mult(int *a, int *b, int *c, int n) {
     // Load into local buffers
     // We need an II=2 since there are two arrays to read into
     input_loop:  for (int i = 0; i < n; i++) {
-#pragma HLS PIPELINE II=2
+#pragma HLS pipeline II=2
         a_buf[i] = a[i];
         b_buf[i] = b[i];
-    }
+    } 
 
     // Multiplication loop with optional pipelining / unrolling
-    mult_loop:
+    mult_loop:  for (int i = 0; i < n; i++) {
 #if UNROLL_FACTOR > 1
 #pragma HLS unroll factor=UNROLL_FACTOR
 #elif PIPELINE_EN
-#pragma HLS pipeline
+#pragma HLS pipeline II=1
 #endif
-    for (int i = 0; i < n; i++) {
         c_buf[i] = a_buf[i] * b_buf[i];
     }
 
 
     // Store results back to global memory
     output_loop:  for (int i = 0; i < n; i++) {
-#pragma HLS PIPELINE
+#pragma HLS pipeline II=1
         c[i] = c_buf[i];
     }
 }
