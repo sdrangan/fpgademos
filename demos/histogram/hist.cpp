@@ -3,7 +3,10 @@
 namespace memmgr = pysilicon::memmgr;
 
 
-void hist(hls::stream<axis_word_t>& in_stream, hls::stream<axis_word_t>& out_stream, mem_word_t* mem) {
+void hist(
+    hls::stream<axis_word_t>& in_stream, 
+    hls::stream<axis_word_t>& out_stream, 
+    mem_word_t* mem) {
 #pragma HLS INTERFACE axis port=in_stream
 #pragma HLS INTERFACE axis port=out_stream
 #pragma HLS INTERFACE m_axi port=mem offset=slave bundle=gmem depth=max_mem_words

@@ -1,0 +1,522 @@
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+\usepackage{amsmath, amssymb, bm, cite, epsfig, psfrag}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{pgf,tikz}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{siunitx}
+\usepackage{../../styles/course}
+
+
+\begin{document}
+
+\title{Introduction to Hardware Design\\
+Loop optimization:  Figures and Code Snippets}
+\author{Profs. Sundeep Rangan, Siddharth Garg}
+\date{}
+
+\maketitle
+\subsection{Quadratic function implementation}
+
+First consider quadratic function:
+
+\begin{systemverilogcode}
+always_ff @(posedge clk) begin
+  x_reg <= x;
+end
+always_comb begin
+  xsq = x_reg * x_reg;
+  xsq_w2 = w2 * xsq;
+  x_w1 = w1 * x_reg;
+  y = w0 + xsq_w2 + x_w1;
+end
+\end{systemverilogcode}
+
+ 
+The block diagram is as shown in Figure~\ref{fig:quad_func}.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+    % Input register
+    \node (x) {\texttt{x}};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=1cm of x,fill=blue!10] (xreg) {};
+    \draw[->] (x) -- (xreg.input);
+    \draw[-] (xreg.output) -- ++(1.3,0) node [midway,above] {\texttt{x\_reg}}
+      coordinate (xreg_split);
+    \fill (xreg_split) circle (1.5pt);
+
+    % Multiplier for x^2
+    \node [circop, right=0.8cm of xreg_split,fill=green!20] (mul1) {$\times$};
+    \draw[->] (xreg_split) -- (mul1);
+    \draw[->] (xreg_split) -- ++(0,0.5) -| (mul1);
+    \node[below= 0.1cm of mul1] (m1) {$M_1$};
+    
+    % Multiplier for w2*x^2
+    \node [circop, right=1cm of mul1,fill=green!20] (mul2) {$\times$};
+    \node [above of=mul2, yshift=0.5cm] (w2) {\texttt{w2}};
+    \draw[->] (mul1) -- (mul2);
+    \draw[->] (w2) -- (mul2);
+    \node[below= 0.1cm of mul2] (m2) {$M_2$};
+
+    % Multiplier for w1*x
+    \node [circop, below=1cm of mul2,fill=green!20] (mul3) {$\times$};
+    \node [below=1cm of mul3] (w1) {\texttt{w1}};
+    \draw[->] (xreg_split) |- (mul3);
+    \draw[->] (w1) -- (mul3);
+    \node[below= 0.1cm of mul3,xshift=-0.5cm] (m3) {$M_3$};
+
+    % Adder w2*x^2 + w1*x   
+    \node[circop,right=1.3cm of mul2,fill=green!20] (add1) {$+$};
+    \draw[->] (mul2) -- node[midway,above] {\texttt{xsq\_w2}} (add1); 
+    \draw[->] (mul3) -| node[midway,below] {\texttt{x\_w1}} (add1);
+
+    % Adder + w0
+    \node[circop,right=1.5cm of add1,fill=green!20] (add2) {$+$};
+    \node [above of=add2, yshift=0.5cm] (w0) {\texttt{w0}};
+    \draw[->] (add1) -- (add2);
+    \draw[->] (w0) -- (add2);
+    \node[below= 0.1cm of add1,xshift=0.5cm] (a1) {$A_1$};
+    \node[below= 0.1cm of add2] (a2) {$A_2$};
+
+    % Output
+    \draw[->] (add2) -- ++(1,0) node[right] {\texttt{y}};
+  
+\end{tikzpicture}
+  \caption{Single cycle implementation of a quadratic function.}
+  \label{fig:quad_func}
+\end{figure}
+
+\subsection{Two cycle implementation}
+\begin{systemverilogcode}
+always_ff @(posedge clk) begin
+  x_reg <= x;
+  lin_term <= w1 * x_reg + w0;
+  xsq <= x_reg * x_reg;
+end
+always_comb begin
+  y = w2 * xsq + lin_term;
+end
+\end{systemverilogcode}
+
+\subsection{General Pipelining}
+
+Non-pipelined loop body:
+\begin{systemverilogcode}
+always_ff @(posedge clk) begin
+  x_reg <= x;
+end
+always_comb begin
+  z1 = f1(x_reg);
+  z2 = f2(z1);
+  y = f3(z2);
+end
+\end{systemverilogcode}
+
+Pipelined loop body:
+\begin{systemverilogcode}
+always_ff @(posedge clk) begin
+  x_s0 <= x;
+  z1_s1 <= f1(x_s0);
+  z2_s2 <= f2(z1_s1);
+end
+always_comb begin
+  y = f3(z2_s2);
+end
+\end{systemverilogcode}
+
+Diagram:
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+    \node (x) {\texttt{x}};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=1cm of x,fill=blue!10] (xreg) {};
+    \draw[->] (x) -- (xreg.input);
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+        right=1cm of xreg,fill=green!20] (f1) {$f_1$};
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+      right=1cm of f1,fill=green!20] (f2) {$f_2$};
+     \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+      right=1cm of f2,fill=green!20] (f3) {$f_3$};
+    
+    \draw[->] (xreg) -- (f1);
+    \draw[->] (f1) -- node[midway,above] {\texttt{z1}} (f2);
+    \draw[->] (f2) -- node[midway,above] {\texttt{z2}} (f3);
+    \draw[->] (f3) -- ++(1,0) node[right] {\texttt{y}};
+\end{tikzpicture}
+  \caption{Unpipelined loop body.}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+    \node (x) {\texttt{x}};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=1cm of x,fill=blue!10] (xreg) {};
+    \draw[->] (x) -- (xreg.input);
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+        right=1cm of xreg,fill=green!20] (f1) {$f_1$};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=1cm of f1,fill=blue!10] (f1reg) {};
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+      right=1.5cm of f1reg,fill=green!20] (f2) {$f_2$};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=1cm of f2,fill=blue!10] (f2reg) {};
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+      right=1.5cm of f2reg,fill=green!20] (f3) {$f_3$};
+    
+    \draw[->] (xreg) -- node[midway,above] {\texttt{x\_s0}} (f1);
+    \draw[->] (f1) -- (f1reg);
+    \draw[->] (f1reg) -- node[midway,above] {\texttt{z1\_s1}} (f2);
+    \draw[->] (f2) -- (f2reg);
+    \draw[->] (f2reg) -- node[midway,above] {\texttt{z2\_s2}} (f3);
+    \draw[->] (f3) -- ++(1,0) node[right] {\texttt{y}};
+\end{tikzpicture}
+  \caption{Pipelined loop body.}
+\end{figure}
+
+\subsection{Pipelining with multiple paths}
+
+
+\begin{systemverilogcode}
+always_ff @(posedge clk) begin
+  x1_reg <= x1;
+  x2_reg <= x2;
+end
+always_comb begin
+  z1 = f1(x1_reg);
+  z2 = f2(x2_reg);
+  z3 = f3(z1, x1_reg);
+  y = f4(z2, z3);
+end
+\end{systemverilogcode}
+
+\pagebreak
+A pipeline version of this could be:
+\begin{systemverilogcode}
+always_ff @(posedge clk) begin
+  x1_s0 <= x1;
+  x2_s0 <= x2;
+  z1_s1 <= f1(x1_s0);
+  z2_s1 <= f2(x2_s0);
+  x1_s1 <= x1_s0;
+  z3_s2 <= f3(z1_s1, x1_s1);
+  z2_s2 <= z2_s1;
+end
+always_comb begin
+  y = f4(z2_s2, z3_s2);
+end
+\end{systemverilogcode}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+    \node (x1) {\texttt{x1}};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=1cm of x1,fill=blue!10] (x1reg) {};
+    \draw[->] (x1) -- (x1reg.input);
+
+    \node (x2) [below=1cm of x1]{\texttt{x2}};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=1cm of x2,fill=blue!10] (x2reg) {};
+    \draw[->] (x2) -- (x2reg.input);
+
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+        right=1cm of x1reg,fill=green!20] (f1) {$f_1$};
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+      right=1cm of x2reg,fill=green!20] (f2) {$f_2$};
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+      right=1cm of f1,fill=green!20] (f3) {$f_3$};
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+      right=1cm of f3,fill=green!20] (f4) {$f_4$};
+    
+    \draw[->] (x1reg) -- ++(0.5,0) -- ++(0,1) -| (f3.north);
+    \draw[->] (x1reg) -- (f1);
+    \draw[->] (x2reg) -- (f2);
+    \draw[->] (f1) -- node[midway,above] {\texttt{z1}} (f3);
+    \draw[->] (f2) -| node[midway,above,xshift=-0.5cm] {\texttt{z2}} (f4.south);
+    \draw[->] (f3) -- node[midway,above] {\texttt{z3}} (f4);
+    \draw[->] (f4) -- ++(1,0) node[right] {\texttt{y}};
+\end{tikzpicture}
+  \caption{Unpipelined loop body.}
+\end{figure}
+
+
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+    \node (x1) {\texttt{x1}};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=1cm of x1,fill=blue!10] (x1reg) {};
+    \draw[->] (x1) -- (x1reg.input);
+
+    \node (x2) [below=1cm of x1]{\texttt{x2}};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=1cm of x2,fill=blue!10] (x2reg) {};
+    \draw[->] (x2) -- (x2reg.input);
+
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+        right=1cm of x1reg,fill=green!20] (f1) {$f_1$};
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+      right=1cm of x2reg,fill=green!20] (f2) {$f_2$};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=1cm of f1,fill=blue!10] (z1_s1) {};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=1cm of f2,fill=blue!10] (z2_s1) {};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        above=0.7cm of z1_s1,fill=blue!10] (x1_s1) {};
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+      right=1cm of z1_s1,fill=green!20] (f3) {$f_3$};
+    \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=1cm of f3,fill=blue!10] (z3_s2) {};
+     \node[shape=register, draw, minimum width=0.7cm, minimum height=1cm,
+        right=3cm of z2_s1,fill=blue!10] (z2_s2) {};
+    \node [shape=rectangle, draw, minimum width=1cm, minimum height=1cm,
+      right=1cm of z3_s2,fill=green!20] (f4) {$f_4$};
+    
+    \draw[->] (x1reg) -- ++(0.7,0) |- node[midway,above,xshift=1cm] {\texttt{x1\_s0}} (x1_s1.input);
+    \draw[->] (x1_s1) -| node[midway,above,xshift=-0.5cm] {\texttt{x1\_s1}} (f3.north);
+    \draw[->] (x1reg) -- (f1);
+    \draw[->] (x2reg) -- (f2);
+    \draw[->] (f1) -- (z1_s1); 
+    \draw[->] (z1_s1) -- node[midway,above] {\texttt{z1\_s1}} (f3);
+    \draw[->] (f2) -- (z2_s1);
+    \draw[->] (z2_s1) -- node[midway,above] {\texttt{z2\_s1}} (z2_s2.input);
+    \draw[->] (z2_s2) -| node[midway,above,xshift=-0.5cm] {\texttt{z2\_s2}} (f4.south);
+    \draw[->] (f3) --  (z3_s2);
+    \draw[->] (z3_s2) -- node[midway,above] {\texttt{z3\_s2}} (f4);
+    \draw[->] (f4) -- ++(1,0) node[right] {\texttt{y}};
+\end{tikzpicture}
+  \caption{Multi-path with pipelining.}
+\end{figure}
+
+\pagebreak
+\subsection*{Memory Accesses}
+
+Consider the following loop to compute the product of two vectors:
+\begin{systemverilogcode}
+logic [31:0] x[0:N-1], w[0:N-1];
+logic [31:0] y[0:N-1];
+
+logic [8:0] i;
+always_ff @(posedge clk) begin
+  // Some start-stop logic
+  // running = ...
+
+  // Stage 0:  Read x[i] and w[i]
+  if ((running) && (i < N)) begin
+    x_s0 <= x[i];
+    w_s0 <= w[i];
+  end
+
+  // Stage 1:  Compute product
+  if ((running) && (i >= 1) && (i < N+1)) begin
+    prod_s1 <= x_s0 * w_s0;
+  end
+
+  // Stage 2:  Write output
+  if ((running) && (i >= 2) && (i < N+2)) begin
+    y[i-2] <= prod_s1;
+  end
+
+  if ((running) && (i < N+2)) begin
+    i <= i + 1;
+  end 
+end
+\end{systemverilogcode}
+
+The C version would be:
+
+\begin{ccode}
+for (int i=0; i < N; i++) {
+#pragma HLS PIPELINE II=1
+  y[i] = w[i]*x[i];
+}
+\end{ccode}
+
+\subsection{Polynomial example}
+
+we want to build the equivalent of:
+\begin{ccode}
+for (i=0; i < n; i++) {
+  y[i] = a[0] + a[1]*x[i] 
+      + a[2]*x[i]*x[i] + a[3]*x[i]*x[i]*x[i];
+}
+\end{ccode}
+
+This is most efficiently performed by Horner's method:
+\begin{ccode}
+for (i=0; i < n; i++) {
+  xi = x[i];
+  yi = a[3];
+  yi += xi*yi + a[2];
+  yi += xi*yi + a[1];
+  yi += xi*yi + a[0];
+  y[i] = yi;
+}
+\end{ccode}
+
+\subsection*{Loop carry dependency}
+
+We can illustrate loop carry dependency with a merge sort:
+First consider non-pipelined version
+\begin{systemverilogcode}
+always_ff @(posedge clk) begin
+  if (start) begin
+    i <= 0;
+    j <= 0;
+    k <= 0;
+  end else if (i < N1 && j < N2) begin
+    if (x1[i] < x2[j]) begin
+      y[k] <= x1[i];
+      i <= i + 1;
+    end else begin
+      y[k] <= x2[j];
+      j <= j + 1;
+    end
+    k <= k + 1;
+  end else if (i < N1) begin
+    y[k] <= x1[i];
+    i <= i + 1;
+    k <= k + 1;
+  end else if (j < N2) begin
+    y[k] <= x2[j];
+    j <= j + 1;
+    k <= k + 1;
+  end
+ 
+end
+
+\end{systemverilogcode}
+
+\begin{ccode}
+for (i=0, j=0, k=0; i < N1 && j < N2; k++) {
+  if (i == N1) {
+    y[k] = x2[j];
+    j++;
+  } else if (j == N2) {
+    y[k] = x1[i];
+    i++;
+  } else if (x1[i] < x2[j]) {
+    y[k] = x1[i];
+    i++;
+  } else {
+    y[k] = x2[j];
+    j++;
+  }
+}
+\end{ccode}
+
+Focusing on the main case, 
+we need the following steps, each taking a clock cycle
+\begin{systemverilogcode}
+// stage 0
+x1i <= x1[i];
+x2j <= x2[j];
+
+// stage 1
+if (x1i < x2j) begin
+  yk <= x1i;
+  i <= i + 1;
+end else begin
+  yk <= x2j;
+  j <= j + 1;
+end
+
+// stage 2
+y[k] <= yk;
+k <= k+1;
+
+\end{systemverilogcode}
+
+Stage 0 of iteration $t$ depends on the results of stage 1 of iteration $t-1$.
+
+
+\subsection*{Loop unrolling}
+
+\begin{ccode}
+// Normal loop
+for (i=0; i < N; i++) {
+  y[i] = w[i]*x[i];
+}
+
+// Unrolled by factor of 2
+for (i=0; i < N; i+=2) {
+  y[i] = w[i]*x[i];
+  y[i+1] = w[i+1]*x[i+1];
+}
+
+\end{ccode}
+
+\begin{ccode}
+// Vitis pragma
+for (i=0; i < N; i++) {
+#pragma HLS unroll factor=2
+  y[i] = w[i]*x[i];
+}
+
+\end{ccode}
+
+But this runs into a memory bottleneck.
+
+\begin{systemverilogcode}
+
+// Stage 0:  Two reads from x and w
+x1_s0 <= x[i];
+x2_s0 <= x[i+1];
+w1_s0 <= w[i];
+w2_s0 <= w[i+1];
+
+// Stage 1:  Two products  -> OK
+y1_s1 <= x1_s0 * w1_s0;
+y2_s1 <= x2_s0 * w2_s0;
+
+// Stage 2:  Two writes
+y[i] <= y1_s1;
+y[i+1] <= y2_s1;
+i <= i + 2;
+\end{systemverilogcode}
+
+\subsection*{Memory bottleneck}
+
+\begin{ccode}
+
+ap_uint<64> xwords[N/2], wwords[N/2], ywords[N/2];
+
+for (i=0; i < N; i += 2) {
+
+  // Read two words from x and w
+  xword = xwords[i/2];
+  wword = wwords[i/2];
+
+  // Exact values
+  x1 = xword.range(31,0);
+  x2 = xword.range(63,32);
+  w1 = wword.range(31,0);
+  w2 = wword.range(63,32);
+
+  // Compute products
+  y1 = w1*x1;
+  y2 = w2*x2;
+
+  // Write outputs
+  yword.range(31,0) = y1;
+  yword.range(63,32) = y2;
+  ywords[i/2] = yword;
+}
+\end{ccode}
+\end{document}
+
+  
+

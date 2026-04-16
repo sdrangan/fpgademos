@@ -312,7 +312,7 @@ def submit(
                 os.path.join(data_dir, 'csynth_loop_info.csv'),\
                 os.path.join(data_dir, 'csynth_resource_usage.csv'),\
                 os.path.join(plot_dir, 'dsq_comparison_plot.png'),\
-                os.path.join(plot_dir, 'dsq_    plot.png')]
+                os.path.join(plot_dir, 'dsq_plot.png')]
     for f in zip_files:
         if not os.path.isfile(f):
             print(f"Error: Required file {f} not found in current directory.")
