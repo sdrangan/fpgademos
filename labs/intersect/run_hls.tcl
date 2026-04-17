@@ -2,6 +2,7 @@ open_project -reset hls_component
 set_top line_inter
 add_files line_inter.cpp
 add_files -tb line_inter_tb.cpp
+add_files include/streamutils.cpp
 
 open_solution -reset "solution1"
 set_part {xc7z020clg484-1}
