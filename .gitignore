@@ -186,5 +186,14 @@ extra/
 **/histogram/vcd/
 **/histogram/data/
 
+# Conv2d project
+**/conv2d/pysilicon_conv2d_proj/
+**/conv2d/pysilicon_conv2d_df_proj/
+**/conv2d/include/
+**/conv2d/logs/
+**/conv2d/vcd/
+**/conv2d/data/
+
+
 
 

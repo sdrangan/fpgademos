@@ -1927,6 +1927,31 @@ class EnumField(DataField):
         lines.append("};")
         return "\n".join(lines)
 
+    @classmethod
+    def _gen_tb_member_definitions(cls, indent_level: int = 0) -> str:
+        enum_type = cls.enum_type
+        if enum_type is None:
+            raise TypeError(f"{cls.__name__} does not define enum_type.")
+
+        indent = cls._get_indent(indent_level)
+        i1 = cls._get_indent(indent_level + 1)
+        lines = [
+            f"{indent}inline const char* enum_to_string({cls.cpp_class_name()} value) {{",
+            f"{i1}switch (value) {{",
+        ]
+        for member in enum_type:
+            lines.extend([
+                f"{i1}case {cls.cpp_class_name()}::{member.name}:",
+                f"{i1}    return \"{member.name}\";",
+            ])
+        lines.extend([
+            f"{i1}default:",
+            f"{i1}    return \"UNKNOWN\";",
+            f"{i1}}}",
+            f"{indent}}}",
+        ])
+        return "\n".join(lines)
+
     def is_close(
         self,
         other: DataSchema,

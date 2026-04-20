@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 
 
-DIRS_TO_COPY = ["build", "hw", "toolchain", "utils"]
+DIRS_TO_COPY = ["build", "hw", "toolchain", "utils", "scripts"]
 IGNORE_SUFFIXES = [".pyc", ".pyo", ".log", ".tmp", "~"]
 
 

@@ -186,6 +186,22 @@ class CsynthParser(object):
         # Convert to a pandas DataFrame for easier handling
         self.loop_df = pd.DataFrame.from_dict(loop_info, orient="index")
 
+        nullable_int_columns = [
+            "PipelineII",
+            "TripCountMin",
+            "TripCountMax",
+            "LatencyMin",
+            "LatencyMax",
+        ]
+        for column in nullable_int_columns:
+            if column in self.loop_df.columns:
+                self.loop_df[column] = pd.to_numeric(self.loop_df[column], errors="coerce").astype("Int64")
+
+        if "PipelineDepth" in self.loop_df.columns:
+            numeric_depth = pd.to_numeric(self.loop_df["PipelineDepth"], errors="coerce")
+            if not numeric_depth.isna().any():
+                self.loop_df["PipelineDepth"] = numeric_depth.astype("Int64")
+
         
     def get_resources(self):
         """
