@@ -1,0 +1,221 @@
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+\usepackage{amsmath, amssymb, bm, cite, epsfig, psfrag}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{pgf,tikz}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{siunitx}
+\usepackage{../../styles/course}
+
+
+\begin{document}
+
+\title{Introduction to Hardware Design\\
+Arrays:  Figures and Code Snippets}
+\author{Profs. Sundeep Rangan, Siddharth Garg}
+\date{}
+
+\maketitle
+\subsection{array}
+
+\begin{tikzpicture}
+    \def\nrow{2}
+    \def\ncol{3}
+
+    \pgfmathtruncatemacro{\lastrow}{\nrow-1}
+    \pgfmathtruncatemacro{\lastcol}{\ncol-1}
+
+    \tikzset{
+        multbox/.style={
+            draw,
+            rectangle,
+            fill=blue!20,
+            minimum width=1.8cm,
+            minimum height=1.0cm
+        }
+    }
+    \tikzset{
+        xbox/.style={
+            draw,
+            rectangle,
+            fill=green!20,
+            minimum width=1.8cm,
+            minimum height=1.0cm
+        }
+    }
+    \tikzset{
+        ybox/.style={
+            draw,
+            rectangle,
+            fill=purple!20,
+            minimum width=1.8cm,
+            minimum height=1.0cm
+        }
+    }
+
+    \node[xbox] (X0) {$X_{n,0}$};
+    \foreach \i in {1,...,\lastrow} {
+        \pgfmathtruncatemacro{\prevrow}{\i-1}
+        \node[xbox,below=1cm of X\prevrow] (X\i) {$X_{n,\i}$};
+    }
+
+    \foreach \i in {0,...,\lastrow} {
+        \node[multbox, right=1cm of X\i] (W\i0) {$W_{\i,0}$};
+        \foreach \j in {1,...,\lastcol} {
+            \pgfmathtruncatemacro{\prevcol}{\j-1}
+            \node[multbox, right=1cm of W\i\prevcol] (W\i\j) {$W_{\i,\j}$};
+        }
+
+        \foreach \j in {0,...,\lastcol} {
+            \pgfmathsetmacro{\arcbend}{1.1 + 0.1*\j}
+            \draw [thick, green!50!black, ->] (X\i.north) to[out=45,in=135,looseness=0.3] (W\i\j.north);
+        }
+    }
+
+    \foreach \j in {0,...,\lastcol} {
+        \node[ybox, below=1cm of W\lastrow\j] (Y\j) {$Y_{n,\j}$};
+        \foreach \i in {0,...,\lastrow} {
+            \draw [thick, purple, ->] (W\i\j.east) to[out=--45,in=45,looseness=0.3] (Y\j.east);
+        }
+    }
+
+\end{tikzpicture}
+
+
+\subsection{Fanout}
+
+Consider simple Vitis code:
+
+\begin{ccode}
+for (int i = 0; i < N; i++) {
+#pragma HLS PIPELINE II=1
+    for (int j = 0; j < M; j++) {
+#pragma HLS UNROLL
+        y[i][j] = f(x[i][j], b);
+    }
+}
+\end{ccode}
+
+Tis can be visualized as:
+
+\pagebreak
+
+
+\begin{figure}
+\begin{tikzpicture}
+    \def\nrow{4}
+
+    \pgfmathtruncatemacro{\lastrow}{\nrow-1}
+   
+    \tikzset{
+        bbox/.style={
+            draw,
+            rectangle,
+            fill=blue!20,
+            minimum width=1.8cm,
+            minimum height=1.0cm
+        }
+    }
+    \tikzset{
+        fbox/.style={
+            draw,
+            rectangle,
+            fill=green!20,
+            minimum width=1.8cm,
+            minimum height=1.0cm
+        }
+    }
+
+    \node[bbox] (b) {$b$};
+
+    \foreach \i in {0,...,\lastrow} {
+        \ifnum\i>0
+            \pgfmathtruncatemacro{\prevrow}{\i-1}
+            \node[fbox,right=1cm of f\prevrow] (f\i) {$f(x_{n\i},b)$};
+        \else
+            \node[fbox,below=1cm of b,xshift=-1cm] (f\i) {$f(x_{n\i},b)$};
+        \fi
+        \node[below=0.7cm of f\i,xshift=-0.3cm] (x\i) {$x_{n\i}$};
+        \node[below=1.3cm of f\i,xshift=0.3cm] (y\i) {$y_{n\i}$};
+        \draw [->] (x\i.north) -- (x\i.north |- f\i.south);
+        \draw [->] (y\i.north |- f\i.south)-- (y\i.north);
+        \draw [->,thick,green!50!black] (b) -- (f\i.north);
+        }   
+\end{tikzpicture}
+\end{figure}
+
+
+\begin{ccode}
+bcopy[0] = b;
+for (int j=1; j < M; j++) {
+    bcopy[j] = bcopy[j-1];
+}
+
+for (int i = 0; i < N; i++) {
+#pragma HLS PIPELINE II=1
+    for (int j = 0; j < M; j++) {
+#pragma HLS UNROLL
+        y[i][j] = f(x[i][j], bcopy[j]);
+    }
+}
+\end{ccode}
+
+\begin{tikzpicture}
+    \def\nrow{4}
+
+    \pgfmathtruncatemacro{\lastrow}{\nrow-1}
+   
+    \tikzset{
+        bbox/.style={
+            draw,
+            rectangle,
+            fill=blue!20,
+            minimum width=1.8cm,
+            minimum height=1.0cm
+        }
+    }
+    \tikzset{
+        fbox/.style={
+            draw,
+            rectangle,
+            fill=green!20,
+            minimum width=1.8cm,
+            minimum height=1.0cm
+        }
+    }
+
+    \node[bbox] (b) {$b$};
+
+    \node[bbox,right=1cm of b] (b0) {$b^{\subsf copy}_{m}$};
+    \draw [->] (b.east) -- (b0.west);
+    \foreach \i in {1,...,\lastrow} {
+        \pgfmathtruncatemacro{\prevrow}{\i-1}
+        \node[bbox,right=1cm of b\prevrow] (b\i) {$b^{\subsf copy}_{\i}$};
+        \draw [->] (b\prevrow.east) -- (b\i.west);
+    }
+
+    \foreach \i in {0,...,\lastrow} {
+        \node[fbox,below=1cm of b\i] (f\i) {$f(x_{n\i},b^{\subsf copy}_{\i})$};
+        \node[below=0.7cm of f\i,xshift=-0.3cm] (x\i) {$x_{n\i}$};
+        \node[below=1.3cm of f\i,xshift=0.3cm] (y\i) {$y_{n\i}$};
+        \draw [->] (x\i.north) -- (x\i.north |- f\i.south);
+        \draw [->] (y\i.north |- f\i.south)-- (y\i.north);
+        \draw [->] (b\i.south) -- (f\i.north);
+        }   
+\end{tikzpicture}
+
+
+\end{document}
+
+
+
+
+
+

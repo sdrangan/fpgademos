@@ -9,11 +9,11 @@ has_children: true
 
 This is a basic 2D convolution accelerator.  All source code is in the folder:
 
+```bash
+https://github.com/sdrangan/hwdesign/tree/main/demos/conv2d
 ```
-hwdesign/demos/conv2d
-```
-
 
 - [IP definition](./ipdefinition.md)
 - [IP design](./design.md)
 - [Evaluation methodology](./evaluation.md)
+- [Performance and synthesis results](./results.md)

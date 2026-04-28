@@ -6,7 +6,7 @@ has_children: true
 ---
 
 
-A tentative set of units is as follows.  I've only added a few units so far, but I am hoping to get done by the end of the semester.  Problem sets can also be found on the [AI Grader portal](../aiautograder/), but this website is experimental.
+A tentative set of units is as follows.  The units are still in flux so new material will be added.   Problem sets can also be found on the [AI Grader portal](../aiautograder/).
 
 * Course Introduction
     * Lecture:  [[PDF]](https://github.com/sdrangan/hwdesign/tree/main/units/unit00_course_intro/course_intro.pdf) [[pptx]](https://github.com/sdrangan/hwdesign/tree/main/units/unit00_course_intro/course_intro.pptx) 
@@ -42,12 +42,13 @@ A tentative set of units is as follows.  I've only added a few units so far, but
     * Lecture:  [[PDF]](https://github.com/sdrangan/hwdesign/tree/main/units/unit06_timing/timing.pdf) [[pptx]](https://github.com/sdrangan/hwdesign/tree/main/units/unit06_timing/timing.pptx) 
     * [Problems](../../units/unit06_timing/prob/timing.html)
 * Unit 7:  Pipelining and Loop Optimization
+    * This unit will be split into two units -- one on pipelining and one on unrolling an memory accesses
     * Lecture:  [[PDF]](https://github.com/sdrangan/hwdesign/tree/main/units/unit07_loopopt/loopopt.pdf) [[pptx]](https://github.com/sdrangan/hwdesign/tree/main/units/unit_loopopt/loopopt.pptx)
     * [Vitis HLS Demo: A pipelined polynomial accelerator](../demos/loopopt)
     * [Problems](../../units/unit07_loopopt/prob/loopopt.html)
     * Lab:  [Building a pipelined line intersection accelartor](../labs/intersect/)
-* Unit 8:  Shared Memory architectures
-    * Lecture:  [[PDF]](https://github.com/sdrangan/hwdesign/tree/main/units/unit08_sharedmem/sharedmem.pdf) [[pptx]](https://github.com/sdrangan/hwdesign/tree/main/units/unit_lunit08_sharedmem/sharedmem.pptx)
+* Unit 9:  Shared Memory architectures
+    * Lecture:  [[PDF]](https://github.com/sdrangan/hwdesign/tree/main/units/unit09_sharedmem/sharedmem.pdf) [[pptx]](https://github.com/sdrangan/hwdesign/tree/main/units/unit09_sharedmem/sharedmem.pptx)
     * [Histogram accelerator](https://github.com/sdrangan/hwdesign/tree/main/demos/histogram)
-* Unit 9:  Systolic Arrays
-* Unit 10:  Multi-Threaded Control
+* Unit 10:  Arrays and Matrix Multiplication
+    * Lecture:  [[PDF]](https://github.com/sdrangan/hwdesign/tree/main/units/unit10_arrays/arrays.pdf) [[pptx]](https://github.com/sdrangan/hwdesign/tree/main/units/unit10_arrays/arrays.pptx)

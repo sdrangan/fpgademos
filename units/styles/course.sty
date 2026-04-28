@@ -5,6 +5,7 @@
 \RequirePackage{pgf}
 \RequirePackage{tikz}
 \RequirePackage{mdframed}
+\RequirePackage{amsmath, amssymb, bm, cite, epsfig, psfrag}
 
 % Define minted environments for C, Python, and SystemVerilog
 \newminted{c}{
@@ -129,5 +130,15 @@
 
 % Tag for question parsing 
 \newcommand{\qtag}[1]{}
+
+\renewcommand{\Re}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\Exp{\mathbb{E}\,}
+\def\Prob{\mathbb{P}}
+\newcommand{\subsf}{\sf \scriptscriptstyle}
+\newcommand{\bs}{\boldsymbol}
+\newcommand{\mc}{\mathcal}
+\newcommand{\wh}{\widehat}
+\newcommand{\ov}{\overline}
 
 \endinput
