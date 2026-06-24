@@ -1,0 +1,19 @@
+# Development install for the hwdesign course repo.
+#
+# Two editable installs into the same venv (C:\Users\sdran\Documents\repos\hwdesign-venv):
+#
+#   1. waveflow — the external package, installed editable from the local clone.
+#      The folder ../pysilicon IS the waveflow repo (it kept its old name; the
+#      package inside is named `waveflow`). This is the single source of truth you
+#      develop in; update it with `git -C ../pysilicon pull`.
+#
+#   2. hwdesign — this repo's thin course-specific package (installed via `-e .`).
+#
+# When the course runs (~Sept 2026), replace the editable waveflow line below with a
+# pinned PyPI release, e.g.:  waveflow==0.1.0
+#
+# Install everything with:
+#   <venv>\Scripts\python.exe -m pip install -r requirements-dev.txt
+
+-e ../pysilicon      # waveflow (editable; folder kept the old pysilicon name)
+-e .                 # hwdesign (this repo)
