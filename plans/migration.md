@@ -59,16 +59,25 @@ handed to Claude CLI (or done by hand) as a self-contained prompt.
 - **Retired:** the old `autograde_llm_latex` script/console-entry is deleted
   (no waveflow equivalent, not carried forward).
 
-## Current state (measured)
+## Current state (re-measured 2026-08-05)
 
-- ~236 references to `xilinxutils` / `pysilicon` across ~65 files
-  (demos, unit figure notebooks, labs, docs).
-- **0** references to `waveflow` — every migrated file is net-new wiring.
-- [`pyproject.toml`](../pyproject.toml) currently declares *this repo* as the
-  installable `pysilicon` package (console scripts `xsim_vcd`, `sv_sim`, …).
-  That is the old vendoring model and must be demoted.
+Counts below exclude `plans/` and the deleted `pysilicon/` tombstone.
+
+- **262 references** to `xilinxutils` (102) / `pysilicon` (160) across **~50
+  course-content files** (demos, unit figure notebooks, labs, docs). Down from
+  ~236-across-~65 in June only because the vendored package was deleted — **no
+  course content has been migrated yet**.
+- **4** files reference `waveflow`, and all 4 are packaging/wiring
+  (`pyproject.toml`, `requirements-dev.txt`, `hwdesign/__init__.py`,
+  `docs/getting_started/index.md`) — no course material imports it yet.
 - `demos/` is ~632 MB on disk but only ~89 tracked files — the bulk is
   gitignored Vitis/Vivado build output, **not** content to migrate.
+
+### Superseded June measurements (kept so the numbers above read in context)
+
+- `pyproject.toml` used to declare *this repo* as the installable `pysilicon`
+  package (console scripts `xsim_vcd`, `sv_sim`, …) — the old vendoring model.
+  **Demoted in Step 3**; it now declares `hwdesign`, depending on waveflow.
 
 ## Environment & how to run pip (measured 2026-06-23)
 
@@ -77,10 +86,24 @@ handed to Claude CLI (or done by hand) as a self-contained prompt.
   (a new shell / `cd` / background task can lose it):
   `C:\Users\sdran\Documents\repos\hwdesign-venv\Scripts\python.exe -m pip ...`.
   This guarantees installs/uninstalls hit this venv, never global Python.
-- **`pysilicon` is currently installed editable** in this venv, pointing at this
-  repo. Step 3 therefore does a deliberate
-  `... -m pip uninstall pysilicon` → `... -m pip install -e .` (as `hwdesign`).
-  This is the only uninstall in the plan; it is intended and venv-scoped.
+- **Installed packages (verified 2026-08-05):** `waveflow` and `hwdesign`, both
+  editable, both refreshed via
+  `...\hwdesign-venv\Scripts\python.exe -m pip install -r requirements-dev.txt`.
+  The old editable `pysilicon` install was removed back in Step 3.
+  **Editable installs go stale in one specific way:** Python source is picked up
+  live, but recorded dependencies and console-script shims are a snapshot taken
+  at install time. In August the venv was missing 10 of waveflow's 13 entry
+  points for exactly this reason. Re-run the command above after waveflow adds
+  a script or a dependency.
+- **The editable install follows whichever branch is checked out in
+  `../pysilicon`** — it changed branches mid-session on 2026-08-05. When
+  something breaks inexplicably, check
+  `git -C ../pysilicon branch --show-current` *first*.
+- **A student-like second venv is planned but not yet created.** Students install
+  with `pip install git+https://github.com/sdrangan/waveflow.git` (repo is
+  public); the dev venv cannot detect course material that accidentally depends
+  on unpushed waveflow work. Refreshing such a venv needs
+  `--force-reinstall --no-deps`, since waveflow's version stays `0.1.0`.
 - **waveflow source = `../pysilicon`** (i.e.
   `C:\Users\sdran\Documents\repos\pysilicon`). That folder *is* the waveflow git
   repo (remote `github.com/sdrangan/waveflow.git`, package name `waveflow`); the
@@ -253,7 +276,28 @@ establish the *process* — how to wire a unit to waveflow, how to track status,
 how to update that unit's docs — knowing each later unit will integrate
 differently. The output is a workflow, **not** a reusable code template.
 
-> **Prompt:** Pick one self-contained unit and integrate it end-to-end against
+**First unit: `unit00_course_intro` + the install story** (decided 2026-08-05,
+superseding the `unit03_fixp` recommendation below). Rationale: it starts the
+course at its actual beginning and forces the install path to be real, which
+closes the two open placeholders in Getting Started (§3 "Get the code & set up
+Python", §4 "Run your first demo") — the gap the Docs track was created for.
+
+Scope, per the tracker's "Intro demos (unit00–01)" group:
+- `units/unit00_course_intro/` — slides only, no code refs; nothing to port.
+- Getting Started §3 — write the real install path, condensing
+  `docs/support/repo/python.md` (x:8, currently the stale xilinxutils story).
+- `units/unit01_basic_logic/figs/logic_figs.ipynb` (x:4) → `waveflow.utils.timing`.
+- `demos/simp_fun/timing_diag.ipynb` (x:9) + `docs/demos/simp_fun/simulation.md`
+  (x:4) → the timing-diagram demo; the natural candidate for Getting Started §4.
+- `demos/scalar_fun/notebooks/view_timing.ipynb` (x:7).
+
+**Verify against a student-like install.** These files are what a new student
+runs first, so a passing run in the dev venv is not sufficient evidence — the dev
+venv resolves waveflow from a local clone that is often on a feature branch. See
+"Environment" above.
+
+> **Prompt (original, superseded — kept for context):** Pick one self-contained
+> unit and integrate it end-to-end against
 > waveflow's *current* API (per `plans/waveflow_api.md`) — recommended:
 > `unit03_fixp` / the `fixp` demo, since fixed-point maps cleanly onto
 > `waveflow.hw.fixpoint` + `waveflow.utils.fixputils`. Rewrite its imports and
@@ -270,6 +314,14 @@ integration log + tracker are updated.
 ---
 
 ## Step 7 — Integrate remaining units one at a time (each bespoke); retire pysilicon
+
+**Status (2026-08-05):** part (1) — retiring the vendored package — is **✅ DONE,
+pulled forward ahead of Step 6** at the author's request, since breaking every
+demo at once is acceptable while the course is not running and makes the
+remaining work legible. All 37 vendored files deleted; `pysilicon/__init__.py`
+left as a tombstone that raises a pointer to waveflow. See the audit in
+`plans/migration_tracker.md`. Part (2) — per-unit integration — is **not started**;
+every course row in the tracker is still `todo`.
 
 **Goal:** work unit by unit. Treat every unit as a *fresh* integration problem —
 do not assume the previous unit's approach transfers. Retire the vendored

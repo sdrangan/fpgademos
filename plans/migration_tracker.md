@@ -148,14 +148,32 @@ for that unit; the demo/lab rows are the runnable material.
 | [docs/support/repo/python.md](../docs/support/repo/python.md) | x:8 | dead-xilinxutils | todo | **rewrite for waveflow+hwdesign install** — becomes Getting Started §3 (Docs prompt B) |
 | [docs/support/nyuremote/python.md](../docs/support/nyuremote/python.md) | x:1 | dead-xilinxutils | todo | NYU-server python env page |
 
-## Vendored `pysilicon/` package — delete wholesale in Step 7 (not course content)
-Status `deleted` = scheduled for removal in Step 7; remains in git history via the
-`pre-waveflow-migration` tag. Files: `pysilicon/__init__.py`, `pysilicon/build/*`
+## Vendored `pysilicon/` package — ✅ DELETED 2026-08-05
+
+All 37 tracked files removed; `pysilicon/__init__.py` is now a **tombstone** that
+raises a `ModuleNotFoundError` pointing at waveflow, `plans/waveflow_api.md`, and
+this tracker — so not-yet-migrated material fails legibly rather than mysteriously.
+Delete the directory outright once every row above is `integrated` or `deferred`.
+
+Pre-deletion audit: every *live* vendored file had an upstream equivalent at the
+same relative path in waveflow (all of `build/*.h,.hpp,.cpp`, `hw/*`,
+`toolchain/*`, `utils/*`, and 7 of 9 `scripts/*`). The only non-upstream files
+were dead weight: `_version.py`, the `old/*` attic (5 xilinxutils-era files),
+`scripts/pysilicon_copy.py` (retired with the vendoring model), and
+`scripts/check_latex_soln.py` — **the one judgment call**: it is course-specific
+(LaTeX solution checking, a plausible `hwdesign` candidate) but was already
+broken, importing `from xilinxutils.parselatex import …`, a module that exists
+nowhere. Deleted rather than carried forward per Step 5 ("add nothing
+speculative"); restore it and its dependency if a grading unit needs them:
+`git show pre-waveflow-migration:pysilicon/scripts/check_latex_soln.py` and
+`…:pysilicon/old/parselatex.py`.
+
+Recoverable in full via the `pre-waveflow-migration` tag. Files: `pysilicon/__init__.py`, `pysilicon/build/*`
 (`__init__.py`, `array_utils.h`, `memmgr.hpp`, `memmgr_tb.hpp`, `streamutils.py`),
 `pysilicon/hw/*` (`arrayutils.py`, `dataschema.py`, `memory.py`),
 `pysilicon/toolchain/*`, `pysilicon/utils/*`, `pysilicon/scripts/*`
 (`create_doc_assets.py`, `pysilicon_copy.py`, `xsim_vcd.py`, `check_latex_soln.py`,
-`build_lab_autograder.py`, …), `pysilicon/old/*`. → **status: deleted (pending Step 7)**.
+`build_lab_autograder.py`, …), `pysilicon/old/*`. → **status: deleted**.
 
 ## Config (low priority / done)
 | File | refs | category | status | integration notes |
