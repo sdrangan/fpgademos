@@ -135,7 +135,7 @@ y = func3(z);    // delay = 1.5
 
   \begin{tikzpicture}[node distance=1cm]
 
-    % x, f1 and f2
+   % x, f1 and f2
     \node (x) {\texttt{x}};
     \coordinate[right=1cm of x] (xsplit);
     \node[draw, right=1cm of xsplit,minimum height=1cm,fill=green!10,yshift=1cm] 
@@ -161,7 +161,6 @@ y = func3(z);    // delay = 1.5
     \node[draw, right=2cm of mux, minimum height=1cm, fill=green!10] (f3) {$f_3(z)$};
     \draw[->] (mux) -- node[midway,above] {\texttt{z}} (f3);
     \draw[->] (f3) -- ++(1.5,0) node[right] {\texttt{y}};
-
 \end{tikzpicture}
 \end{figure}
 
