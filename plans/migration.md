@@ -325,7 +325,14 @@ filled in as the migration progresses.
    and the waveflow editable install from Step 2/3. **Owned here.** (fill at Step 3)
 4. *Run your first demo* — link to the golden-slice demo. (fill at Step 6)
 
-### Docs prompt A — scaffold the front door (do early, alongside Step 3)
+### Docs prompt A — scaffold the front door (do early, alongside Step 3) — ✅ DONE 2026-06-23
+
+**Status:** created `docs/getting_started/index.md` (`nav_order: 1`) with the
+four-part outline; sections 1–2 link to Support ▸ Vitis/Vivado and ▸ FPGA Boards;
+sections 3–4 are marked placeholders (filled by Docs prompt B / first-unit work).
+Renumbered the other top-level sections: Demos 2, Support 3, NYU 4, Labs 5, AI
+Autograder 6, Project 7. Added a top-of-page "⚠️ Under migration" banner.
+
 
 > **Prompt:** Create a new top-level docs section "Getting Started" for the
 > just-the-docs site. Add `docs/getting_started/index.md` with front matter
