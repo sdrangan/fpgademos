@@ -27,7 +27,7 @@ an alternative open-source **VCD** or [**Value Change Dump**](https://en.wikiped
 
 The `xilinxutils` package has a simple python file that modifies the simulation files to capture the VCD output and re-runs the simulation.  You can execute it as follows:
 
-* [Activate the virtual environment](../../support/repo/python.md) with `xilinxutils`
+* [Activate the virtual environment](../../support/repo/package.md) with `waveflow` and `hwdesign`
 * Navigate (i.e., `cd`) to the directory of the Vitis IP project.  In the scalar function project, this Vitis project is in `hwdesign\scalar_fun\scalar_fun_vitis`
 * Identify the `component_name` and `top_name`. 
     * When the IP was synthesized, Vitis created a directory of the form `<component_name>/<top_name>` based on the names of the component and top-level function.  Based on the settings we used in this project, this directory is: 

@@ -1,44 +1,41 @@
 [build-system]
-requires = ["setuptools>=61", "setuptools-scm"]
+requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pysilicon"
-description = "Python tools for hardware design"
+name = "hwdesign"
+version = "0.1.0"
+description = "Course-specific helpers for the Introduction to Hardware Design course, built on top of waveflow"
 readme = {file = "readme.md", content-type = "text/markdown"}
 requires-python = ">=3.9"
 license = {text = "BSD-3-Clause"}
 authors = [
   {name = "Sundeep Rangan", email = "srangan@nyu.edu"},
 ]
-keywords = ["xilinx", "fpga", "vivado", "vitis", "automation", "utilities"]
+keywords = ["fpga", "vivado", "vitis", "hardware", "education", "waveflow"]
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: BSD License",
   "Operating System :: OS Independent",
 ]
+# hwdesign is a thin course-specific layer ON TOP OF waveflow. waveflow itself is
+# installed editable from ../pysilicon during development (see requirements-dev.txt);
+# this declaration is satisfied by that editable install. Pin to a release
+# (waveflow==X.Y.Z) when the course runs (~Sept 2026).
 dependencies = [
-  "requests"
+  "waveflow",
 ]
-dynamic = ["version"]
 
 [tool.setuptools]
 include-package-data = true
 
+# Flat layout: the package lives at ./hwdesign/. The explicit include filter keeps
+# setuptools from treating the non-package top-level dirs (units, demos, labs, docs,
+# gradescope, extra) as packages.
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["pysilicon*"]
+include = ["hwdesign*"]
 
-[tool.setuptools_scm]
-fallback_version = "0.1.0"
-write_to = "pysilicon/_version.py"
-
-[project.scripts]
-xsim_vcd = "pysilicon.scripts.xsim_vcd:main"
-collect_overlay = "pysilicon.scripts.collect_overlay:main"
-sv_sim = "pysilicon.scripts.sv_sim:main"
-sv_synth = "pysilicon.scripts.sv_build:run_synth"
-sv_impl  = "pysilicon.scripts.sv_build:run_impl"
-autograde_llm_latex = "pysilicon.scripts.autograde_llm_latex:entrypoint"
-build_lab_autograder = "pysilicon.scripts.build_lab_autograder:main"
-pysilicon_copy = "pysilicon.scripts.pysilicon_copy:main"
+# Console scripts: the old pysilicon entry points are intentionally dropped during
+# the migration. Re-add only genuinely course-specific scripts here as units are
+# integrated; general tooling now lives in waveflow (waveflow.scripts.*).
