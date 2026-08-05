@@ -7,7 +7,10 @@ name = "hwdesign"
 version = "0.1.0"
 description = "Course-specific helpers for the Introduction to Hardware Design course, built on top of waveflow"
 readme = {file = "readme.md", content-type = "text/markdown"}
-requires-python = ">=3.9"
+# Must stay >= waveflow's own floor (currently >=3.10). Declaring anything lower
+# is a lie: hwdesign cannot function without waveflow, so an older interpreter
+# fails at dependency resolution instead of here, with a confusing error.
+requires-python = ">=3.10"
 license = {text = "BSD-3-Clause"}
 authors = [
   {name = "Sundeep Rangan", email = "srangan@nyu.edu"},

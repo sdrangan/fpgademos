@@ -4,13 +4,14 @@ parent: NYU Remote Server
 nav_order: 4
 has_children: False
 ---
-# Using Python 
+# Using Python
 
-The NYU EDA servers provide a system Python installation, but **`pip` is not available** and you do **not** have permission to install system‑wide packages.  
+The NYU EDA servers provide a system Python installation, but **`pip` is not available** and you do **not** have permission to install system‑wide packages.
 To work around this, students should use **`uv`**, a modern, fast, user‑level Python package manager that installs entirely in your home directory.
 This suggestion was provided by the student Ashesh Kaji, so please thank him next time.
 
 **'`uv`** is a drop‑in replacement for:
+
 - `pip`
 - `virtualenv`
 - `pipx`
@@ -91,19 +92,65 @@ uv --version
 
 ---
 
-## 2. Create a Virtual Environment
+## 2. Install a current Python
 
-Navigate to the directory where you [cloned the `hwdesign` repo](../repo/repo.md).
-Generally, this is `~/hwdesign`.
-Inside that project directory:
+{: .warning }
+> **The system Python on the EDA servers is too old.**  It is version 3.9, but
+> `waveflow` requires **3.10 or newer**.  If you build the environment on the
+> system Python, the install fails later with:
+>
+> ```
+> × No solution found when resolving dependencies:
+> ╰─▶ Because the current Python version (3.9.25) does not satisfy
+>     Python>=3.10 and waveflow==0.1.0 depends on Python>=3.10 ...
+> ```
+>
+> You cannot fix this with a `requirements.txt` — that file lists *packages*,
+> and the Python interpreter is not one of them.  Instead, let `uv` install a
+> newer Python for you, as shown below.  This is one of the main reasons we use
+> `uv` here: it installs the interpreter into your home directory and needs no
+> administrator access.
+
+Install Python 3.12 (the version the course material is developed against):
 
 ```bash
-uv venv
+uv python install 3.12
+```
+
+This downloads a self-contained Python into your home directory.  It does not
+touch the system Python, and no other user is affected.
+
+## 3. Create a Virtual Environment
+
+Navigate to the directory where you [cloned the `hwdesign` repo](../repo/repo.md).
+Generally, this is `~/hwdesign`:
+
+```bash
+cd ~/hwdesign
+```
+
+{: .note }
+> Create the environment **inside the repository**, not in your home directory.
+> The `uv pip install -e .` step below installs the `hwdesign` package from the
+> current directory, and it will fail anywhere else with an error about a
+> missing `pyproject.toml`.
+
+Then create the environment, telling `uv` to use the Python you just installed:
+
+```bash
+uv venv --python 3.12
+```
+
+If you already created a `.venv` with the old system Python, `uv` will refuse to
+overwrite it.  Replace it with:
+
+```bash
+uv venv --python 3.12 --clear
 ```
 
 This creates a `.venv/` folder containing a private Python environment.
 
-Activate it:  
+Activate it:
 
 ```bash
 source .venv/bin/activate.csh  # for tcsh
@@ -122,7 +169,7 @@ You can deactivate with:
 deactivate
 ```
 
-## 3. Install the course packages
+## 4. Install the course packages
 
 The course uses two packages: **`waveflow`** (a general-purpose hardware
 modeling framework, kept in a [separate repository](https://github.com/sdrangan/waveflow))
@@ -170,7 +217,7 @@ environment is not activated.  If it raises an error mentioning `pysilicon`,
 that is unmigrated course material rather than a broken install — see the note
 at the end of [Installing the Python packages](../repo/package.md).
 
-## 4. Running Python
+## 5. Running Python
 
 With the environment activated, run scripts with plain `python`:
 
@@ -196,20 +243,20 @@ Everything runs inside your private environment, not the system Python.
 
 ---
 
-## 5. Why We Use `uv` Instead of `pip`
+## 6. Why We Use `uv` Instead of `pip`
 
 The NYU EDA servers:
 
 - Do **not** include `pip`
 - Do **not** allow system‑wide package installation
 - Use a system Python that students cannot modify
+- Ship a system Python (3.9) older than the course requires (3.10+)
 
 `uv` solves all of these problems:
 
 - Installs into your **home directory**
 - Requires **no sudo**
+- **Installs Python itself**, so you are not stuck with the system version
 - Manages virtual environments automatically
 - Works on macOS, Windows, and Linux
 - Is significantly faster and more reliable than pip
-
-    

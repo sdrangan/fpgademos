@@ -18,6 +18,22 @@ lot of confusion later:
 You install `waveflow` **from GitHub**; you install `hwdesign` **from your clone
 of this repository**. You do not need to clone waveflow.
 
+## Before you start: Python 3.10 or newer
+
+Check your Python version:
+
+```bash
+python --version
+```
+
+`waveflow` requires **Python 3.10 or newer**. On an older interpreter the
+install fails at dependency resolution with a message about
+`Python>=3.10`, rather than anything obviously version-related. If yours is
+older, install a current Python before continuing — on the NYU EDA servers,
+whose system Python is 3.9, see
+[Using Python on the NYU server](../nyuremote/python.md), which uses `uv` to
+install a newer interpreter without administrator access.
+
 ## 1. Clone the course repository
 
 If you have not already, follow [Cloning the Repository](./repo.md). The rest of
