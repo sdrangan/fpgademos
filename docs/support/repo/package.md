@@ -63,12 +63,13 @@ This pulls waveflow and its dependencies (numpy, pandas, simpy, scikit-learn,
 and others), so it will take a few minutes.
 
 {: .warning }
-> **Do not `pip install pywaveflow`.** There is a package by that name on PyPI,
-> but it is a placeholder that only reserves the name — it contains a single
-> file and none of the actual framework. Its own description tells you to
-> install from GitHub, which is what the command above does. Installing it
-> will not give you a working environment, and having both installed puts two
-> packages in conflict over the same `waveflow` directory.
+> **Do not `pip install pywaveflow` yet.** waveflow is published on PyPI under
+> the name `pywaveflow` — the different name is normal and not a mistake, in
+> the same way `pip install scikit-learn` gives you `import sklearn`. But the
+> version currently on PyPI is only a placeholder reserving the name: it
+> contains a single file and none of the actual framework. Until a real
+> release is published, install from GitHub as shown above. Installing both
+> puts two packages in conflict over the same `waveflow` directory.
 
 ## 4. Install hwdesign
 

@@ -27,8 +27,15 @@ handed to Claude CLI (or done by hand) as a self-contained prompt.
 > PyPI" and directs users to install from source. It declares **no
 > dependencies**. It is not usable — the current repo has 119 `.py` files.
 >
-> The name **`waveflow`** itself is **unregistered** (404 on both the JSON API
-> and `/simple/`), so it appears to still be available.
+> The name **`waveflow`** itself is unregistered (404 on both the JSON API and
+> `/simple/`) but is **NOT claimable** — PyPI rejects it as too similar to the
+> existing project **`wave-flow`** (confirmed present, HTTP 200). PyPI's
+> similarity check is stricter than PEP 503 normalization: PEP 503 collapses
+> runs of `-`, `_`, `.` to a single `-` (so `wave_flow` and `wave.flow` merely
+> redirect to `wave-flow`), but Warehouse *additionally* compares names with
+> separators stripped entirely, under which `wave-flow` and `waveflow` are the
+> same name. This is why the author's attempt to claim `waveflow` was blocked
+> and `pywaveflow` was registered instead.
 >
 > Consequences today: waveflow must be installed from GitHub
 > (`pip install git+https://github.com/sdrangan/waveflow.git`; repo is public),
@@ -38,21 +45,36 @@ handed to Claude CLI (or done by hand) as a self-contained prompt.
 > All three install pages say so explicitly and warn students off
 > `pip install pywaveflow`.
 >
-> **Open decision before the course runs (~Sept 2026)** — publishing a real
-> release removes the ordering constraint, but the two names must be
-> reconciled first. The *import* name is `waveflow` either way; what is at
-> stake is the *distribution* name:
+> **Distribution name ≠ import name.** These are independent, exactly as with
+> `scikit-learn`→`sklearn` or `Pillow`→`PIL`. `pip install pywaveflow` giving
+> `import waveflow` is correct and needs no workaround — the published 0.0.1
+> placeholder already does precisely this (verified 2026-08-05 in a throwaway
+> venv: dist `pywaveflow` installs `site-packages/waveflow/`, and
+> `import waveflow` succeeds). So `pywaveflow` is the distribution name, and
+> `waveflow` stays the import name everywhere. There is no decision to make
+> about the import name.
 >
-> - **Publish as `waveflow`** — matches waveflow's own `pyproject.toml`
->   (`name = "waveflow"`) and `hwdesign`'s `dependencies = ["waveflow"]`, so
->   nothing here changes. Requires the PyPI name to actually be claimable.
-> - **Publish as `pywaveflow`** — uses the already-reserved name, but then
->   waveflow's `pyproject.toml` must be renamed to `pywaveflow` **and**
->   `hwdesign`'s dependency must become `pywaveflow`, or hwdesign will keep
->   looking for a distribution that does not exist.
+> **The real inconsistency — one distribution, two names depending on source.**
+> waveflow's own `pyproject.toml` declares `name = "waveflow"`, so a *git*
+> install produces distribution `waveflow`, while the *PyPI* artifact is
+> distribution `pywaveflow`. `hwdesign` declares `dependencies = ["waveflow"]`,
+> which matches the git install we use today and will **not** match a future
+> PyPI release.
 >
-> Whichever is chosen, the stale 0.0.1 placeholder should be superseded so it
-> stops being a trap for anyone who searches PyPI.
+> **Coupled fix, to be made in one go before the course runs (~Sept 2026):**
+> 1. In the **waveflow** repo: `pyproject.toml` → `name = "pywaveflow"`
+>    (the package directory and every `import waveflow` stay untouched).
+> 2. In **this** repo: `dependencies = ["waveflow"]` → `["pywaveflow"]`, then
+>    pin the release (`pywaveflow==X.Y.Z`), and update the three install pages
+>    to `pip install pywaveflow`.
+>
+> Do **not** make step 2 alone: today's editable git install provides
+> distribution `waveflow`, so changing hwdesign's dependency first would break
+> `pip install -e .` immediately. Step 1 must land first, or both together.
+>
+> Publishing a real release also removes the install-ordering constraint and
+> retires the placeholder, which is currently a trap for anyone who searches
+> PyPI.
 
 ## Decisions (locked)
 

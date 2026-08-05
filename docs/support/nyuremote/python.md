@@ -154,9 +154,10 @@ uv pip install -e .
 > above are the complete install.
 
 {: .warning }
-> Do **not** `uv pip install pywaveflow`.  The PyPI package of that name is a
-> placeholder that only reserves the name — it contains none of the actual
-> framework.  Install waveflow from GitHub as shown above.
+> Do **not** `uv pip install pywaveflow` yet.  waveflow is published on PyPI
+> under that name, but the version currently there is only a placeholder
+> reserving the name and contains none of the actual framework.  Install from
+> GitHub as shown above until a real release is published.
 
 Verify that both packages are importable:
 
