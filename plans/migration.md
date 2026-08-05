@@ -19,17 +19,40 @@ handed to Claude CLI (or done by hand) as a self-contained prompt.
    and has since evolved well beyond pysilicon.
    Docs: https://sdrangan.github.io/waveflow/docs/
 
-> **Correction (2026-08-05):** an earlier version of this line claimed waveflow
-> was "published on PyPI". It is **not** — `pip download waveflow` returns
-> *No matching distribution found*. It is installed from GitHub
-> (`pip install git+https://github.com/sdrangan/waveflow.git`; the repo is
-> public). This matters for the student install: because `hwdesign` declares
-> `waveflow` as a dependency, running `pip install -e .` in a fresh environment
-> *before* installing waveflow makes pip search PyPI and fail. Order is
-> load-bearing, and the install docs say so explicitly. Publishing waveflow to
-> PyPI would remove the ordering constraint and is worth doing before the
-> course runs (~Sept 2026); the release-pin note in `requirements-dev.txt`
-> assumes it.
+> **PyPI status (measured 2026-08-05) — read before pinning a release.**
+>
+> There is a **placeholder** on PyPI under the name **`pywaveflow`** (v0.0.1,
+> uploaded 2026-06-07). Its wheel contains exactly one file,
+> `waveflow/__init__.py`, whose own docstring says it "reserves the name on
+> PyPI" and directs users to install from source. It declares **no
+> dependencies**. It is not usable — the current repo has 119 `.py` files.
+>
+> The name **`waveflow`** itself is **unregistered** (404 on both the JSON API
+> and `/simple/`), so it appears to still be available.
+>
+> Consequences today: waveflow must be installed from GitHub
+> (`pip install git+https://github.com/sdrangan/waveflow.git`; repo is public),
+> and because `hwdesign` declares `waveflow` as a dependency, install **order
+> is load-bearing** — `pip install -e .` in a fresh venv *before* installing
+> waveflow makes pip search PyPI for dist `waveflow`, find nothing, and fail.
+> All three install pages say so explicitly and warn students off
+> `pip install pywaveflow`.
+>
+> **Open decision before the course runs (~Sept 2026)** — publishing a real
+> release removes the ordering constraint, but the two names must be
+> reconciled first. The *import* name is `waveflow` either way; what is at
+> stake is the *distribution* name:
+>
+> - **Publish as `waveflow`** — matches waveflow's own `pyproject.toml`
+>   (`name = "waveflow"`) and `hwdesign`'s `dependencies = ["waveflow"]`, so
+>   nothing here changes. Requires the PyPI name to actually be claimable.
+> - **Publish as `pywaveflow`** — uses the already-reserved name, but then
+>   waveflow's `pyproject.toml` must be renamed to `pywaveflow` **and**
+>   `hwdesign`'s dependency must become `pywaveflow`, or hwdesign will keep
+>   looking for a distribution that does not exist.
+>
+> Whichever is chosen, the stale 0.0.1 placeholder should be superseded so it
+> stops being a trap for anyone who searches PyPI.
 
 ## Decisions (locked)
 
