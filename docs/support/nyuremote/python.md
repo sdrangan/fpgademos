@@ -35,38 +35,53 @@ Then install `uv` into your home directory:
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-This command installs `uv` in a local binary in the directory `~/.local/bin`. 
-We need to add the path to the system.  Linux has different *shells*,
-and the commands differ slightly depending on the shell type.
-Below are the commands for the **tcsh** shell type.  You can verify your shell
-type with 
+This command installs `uv` as a local binary in the directory `~/.local/bin`.
+We need to add that directory to your path.  Linux has different *shells*, and
+the commands differ depending on which one you use.  Check your shell with:
 
 ```bash
 echo $SHELL
 ```
 
-If you are not in the tcsh type, the commands will not work.  I will
-put in commands later for bash.
+The output ends in either `tcsh` or `bash`.  Follow the matching section below —
+**the commands are not interchangeable.**  You can edit the file with any Linux
+editor, such as `vi`.
 
-Now, assuming you are in tcsh, to add `uv` to your system path
-and to disable the existing python version,
-open the file `~/.tcshrc` and add the following lines at the end of that file.
+### If your shell is `tcsh`
+
+Add these lines to the end of `~/.tcshrc`, which adds `uv` to your path and
+disables the system Python:
 
 ```bash
 setenv PATH "$HOME/.local/bin:$PATH"
 unsetenv PYTHONPATH
 ```
 
-Note that you can edit the file with any program in linux such as `vi`.
-
-Now rerun the shell initialization:
+Then reload the shell configuration:
 
 ```bash
-source ./.tschrc
+source ~/.tcshrc
 ```
 
-Note that you do not need to perform this command for subsequent shells.
-This command will be run automatically.
+### If your shell is `bash`
+
+Add these lines to the end of `~/.bashrc` instead:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+unset PYTHONPATH
+```
+
+Then reload the shell configuration:
+
+```bash
+source ~/.bashrc
+```
+
+### Both shells
+
+You only need to do this once.  Subsequent logins will run the configuration
+automatically.
 
 You can verify installation with:
 
@@ -78,8 +93,8 @@ uv --version
 
 ## 2. Create a Virtual Environment
 
-Navigate to the directory where you cloned the `hwdesign` repo.  Generally,
-this is `~/hwdesign`.  
+Navigate to the directory where you [cloned the `hwdesign` repo](../repo/repo.md).
+Generally, this is `~/hwdesign`.
 Inside that project directory:
 
 ```bash
@@ -98,7 +113,7 @@ source .venv/bin/activate      # for bash
 Your prompt should now show something like:
 
 ```
-(.venv) <netid>@ecs02:~/project$
+(.venv) <netid>@ecs02:~/hwdesign$
 ```
 
 You can deactivate with:
@@ -107,37 +122,71 @@ You can deactivate with:
 deactivate
 ```
 
-## 3. Install Your Project or Dependencies
+## 3. Install the course packages
 
-From the `hwdesign` directory, while the virtual environment
-is activated, install the packages with:
+The course uses two packages: **`waveflow`** (a general-purpose hardware
+modeling framework, kept in a [separate repository](https://github.com/sdrangan/waveflow))
+and **`hwdesign`** (this course's own helpers, in this repo).  See
+[Installing the Python packages](../repo/package.md) for what each one does —
+this page covers only the `uv` commands you need on the NYU servers.
+
+From the `hwdesign` directory, with the virtual environment activated, install
+waveflow first:
 
 ```bash
-uv pip install -r requirements.txt
+uv pip install git+https://github.com/sdrangan/waveflow.git
 ```
 
-Then, install the `xilinxutils` package as editable:
+Then install `hwdesign` itself as editable:
 
 ```bash
 uv pip install -e .
 ```
 
+> ⚠️ **Run these two commands in this order.** `hwdesign` depends on
+> `waveflow`, but waveflow is distributed from GitHub rather than PyPI.  If you
+> run `uv pip install -e .` first, the install fails because it cannot find
+> `waveflow` on PyPI.  Installing waveflow first satisfies the dependency.
+
+{: .note }
+> Do **not** use `requirements.txt` here.  That file is a pre-migration snapshot
+> of a different environment and does not list either package; the two commands
+> above are the complete install.
+
+Verify that both packages are importable:
+
+```bash
+python -c "import hwdesign, waveflow; print('OK')"
+```
+
+If this raises `ModuleNotFoundError`, the usual cause is that the virtual
+environment is not activated.  If it raises an error mentioning `pysilicon`,
+that is unmigrated course material rather than a broken install — see the note
+at the end of [Installing the Python packages](../repo/package.md).
 
 ## 4. Running Python
 
-Once the environment is activated:
+With the environment activated, run scripts with plain `python`:
 
 ```bash
-uv run python your_script.py
+python your_script.py
 ```
 
-You can also run the scripts like `sv_sim` with:
+Console scripts such as `sv_sim` are on your path once the environment is
+activated:
 
-```
-uv run sv_sim --source [source files] --tb [tb_files]
+```bash
+sv_sim --source [source files] --tb [tb_files]
 ```
 
 Everything runs inside your private environment, not the system Python.
+
+{: .warning }
+> Prefer the activated environment over `uv run`.  Because this directory
+> contains a `pyproject.toml`, `uv run` treats it as a project and may try to
+> re-resolve its dependencies before running — which fails, since `waveflow` is
+> not on PyPI.  If you see a resolution error mentioning `waveflow`, activate
+> the environment and run `python` directly as shown above.
 
 ---
 

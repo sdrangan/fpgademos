@@ -147,7 +147,7 @@ for that unit; the demo/lab rows are the runnable material.
 |---|---|---|---|---|
 | ~~docs/support/repo/python.md~~ | x:8 | dead-xilinxutils | **integrated** | ✅ 2026-08-05 — **split and deleted**. Student install → [docs/support/repo/package.md](../docs/support/repo/package.md) (two packages explained, waveflow from GitHub, ordering caveat, verify snippet). Instructor/CA setup → [docs/support/repo/developer.md](../docs/support/repo/developer.md) (editable waveflow, staleness/branch/student-parity pitfalls, requirements regeneration). 3 inbound links repointed. |
 | [docs/support/repo/repo.md](../docs/support/repo/repo.md) | — | — | **integrated** | ✅ 2026-08-05 — reviewed, left as-is (cloning only; no package refs) |
-| [docs/support/nyuremote/python.md](../docs/support/nyuremote/python.md) | x:1 | dead-xilinxutils | todo | NYU-server python env page |
+| [docs/support/nyuremote/python.md](../docs/support/nyuremote/python.md) | x:1 | dead-xilinxutils | **integrated** | ✅ 2026-08-05 — uv flow updated for waveflow+hwdesign (install order, no `requirements.txt`, verify step). Also fixed a broken `source ./.tschrc` typo, filled in the missing bash-shell instructions the page had deferred, and warned against `uv run` re-resolving deps. **Untested:** no NYU-server or local `uv` access — the `uv run` caveat is reasoned from uv's project-sync behavior, not observed. |
 
 ## Vendored `pysilicon/` package — ✅ DELETED 2026-08-05
 
