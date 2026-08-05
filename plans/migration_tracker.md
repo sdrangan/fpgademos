@@ -145,7 +145,8 @@ for that unit; the demo/lab rows are the runnable material.
 ## Support / install docs (→ folds into Getting Started, Docs track)
 | File | refs | category | status | integration notes |
 |---|---|---|---|---|
-| [docs/support/repo/python.md](../docs/support/repo/python.md) | x:8 | dead-xilinxutils | todo | **rewrite for waveflow+hwdesign install** — becomes Getting Started §3 (Docs prompt B) |
+| ~~docs/support/repo/python.md~~ | x:8 | dead-xilinxutils | **integrated** | ✅ 2026-08-05 — **split and deleted**. Student install → [docs/support/repo/package.md](../docs/support/repo/package.md) (two packages explained, waveflow from GitHub, ordering caveat, verify snippet). Instructor/CA setup → [docs/support/repo/developer.md](../docs/support/repo/developer.md) (editable waveflow, staleness/branch/student-parity pitfalls, requirements regeneration). 3 inbound links repointed. |
+| [docs/support/repo/repo.md](../docs/support/repo/repo.md) | — | — | **integrated** | ✅ 2026-08-05 — reviewed, left as-is (cloning only; no package refs) |
 | [docs/support/nyuremote/python.md](../docs/support/nyuremote/python.md) | x:1 | dead-xilinxutils | todo | NYU-server python env page |
 
 ## Vendored `pysilicon/` package — ✅ DELETED 2026-08-05

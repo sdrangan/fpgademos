@@ -38,11 +38,19 @@ Everything else runs in simulation on your laptop.
 
 ## 3. Get the code & set up Python
 
-> _To be written (Docs prompt B, after the package/install story settles in the
-> migration). This will cover: cloning the repo, creating the virtual
-> environment, installing the `waveflow` package and this repo's `hwdesign`
-> helpers, and verifying the install. For now, the interim notes live under
-> [Support ▸ GitHub Repository](../support/repo/)._
+Two steps, in order:
+
+1. **[Clone the repository](../support/repo/repo.md)** — all the course material
+   lives in one GitHub repo.
+2. **[Install the Python packages](../support/repo/package.md)** — create a
+   virtual environment, then install `waveflow` (the hardware modeling
+   framework, from GitHub) and `hwdesign` (this course's helpers, from your
+   clone). That page ends with a snippet to verify the install.
+
+Instructors and course assistants who need to modify course material or
+`waveflow` itself should follow
+[Developer Setup](../support/repo/developer.md) instead — students do not need
+it.
 
 ## 4. Run your first demo
 

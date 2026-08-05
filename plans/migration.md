@@ -17,7 +17,19 @@ handed to Claude CLI (or done by hand) as a self-contained prompt.
 4. Class ended; work on this repo stopped.
 5. The external package was renamed **waveflow** (pysilicon was taken on PyPI)
    and has since evolved well beyond pysilicon.
-   Docs: https://sdrangan.github.io/waveflow/docs/ — published on PyPI.
+   Docs: https://sdrangan.github.io/waveflow/docs/
+
+> **Correction (2026-08-05):** an earlier version of this line claimed waveflow
+> was "published on PyPI". It is **not** — `pip download waveflow` returns
+> *No matching distribution found*. It is installed from GitHub
+> (`pip install git+https://github.com/sdrangan/waveflow.git`; the repo is
+> public). This matters for the student install: because `hwdesign` declares
+> `waveflow` as a dependency, running `pip install -e .` in a fresh environment
+> *before* installing waveflow makes pip search PyPI and fail. Order is
+> load-bearing, and the install docs say so explicitly. Publishing waveflow to
+> PyPI would remove the ordering constraint and is worth doing before the
+> course runs (~Sept 2026); the release-pin note in `requirements-dev.txt`
+> assumes it.
 
 ## Decisions (locked)
 
