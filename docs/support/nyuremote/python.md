@@ -217,6 +217,11 @@ environment is not activated.  If it raises an error mentioning `pysilicon`,
 that is unmigrated course material rather than a broken install — see the note
 at the end of [Installing the Python packages](../repo/package.md).
 
+If instead you see a shared-library or missing-symbol error before Python even
+starts, that is the `LD_PRELOAD` misconfiguration on the EDA servers, not a
+problem with your environment — see
+[Environment Variable Problem](./launching.md#environment-variable-problem).
+
 ## 5. Running Python
 
 With the environment activated, run scripts with plain `python`:
