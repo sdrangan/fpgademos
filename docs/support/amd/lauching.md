@@ -32,6 +32,12 @@ In Windows, you can run both the Vitis IDE and Vivado IDE from the **Start menu*
 
 To use any command line tool, you will need to set the path.  In the instructions below, I have assumed that users working locally on Linux and Windows are on version 2025.1, while users on the NYU remote machine are on the newer 2026.1.  I will test the demos and labs to make sure everything works on both versions as the semester progresses.
 
+{: .important }
+> On the NYU servers this step is **not optional**.  Logging in puts an older
+> 2023.2 Vivado and Vitis HLS on your path automatically, so skipping the
+> settings command silently gives you the wrong tool version.  See
+> [Tool Version Problem](../nyuremote/launching.md#tool-version-problem).
+
 For a Vivado command line tool:
 
 * In Windows, open a Command Shell, not a Powershell.  In Linux, open any terminal.

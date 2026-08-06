@@ -63,6 +63,50 @@ This should print nothing.
 > the original behaviour back.
 
 
+## Tool Version Problem
+
+Your account automatically sources `~/tcshrc_xilinx_local` at login, and that file
+puts the **old 2023.2** tools on your path:
+
+```bash
+setenv XILINX /eda/xilinx/
+set path=( $path $XILINX/Vivado/2023.2/bin $XILINX/Vitis_HLS/2023.2/bin $XILINX/DocNav )
+```
+
+So if you log in and simply type `vivado`, you get version **2023.2**, not the
+2026.1 version this class uses — and nothing warns you.  The same applies to
+`vitis_hls`, which is the 2023.2 HLS tool; in 2026.1 the HLS flow is
+`vitis-run --mode hls` instead.
+
+This matters because Xilinx project files are generally **not** backward
+compatible.  Using the old tools by accident usually does not fail immediately;
+it fails later, with confusing errors about a project built by a newer version.
+
+You must therefore run the settings command for 2026.1 in each session before
+using the tools:
+
+```bash
+source /eda/xilinx/2026.1/Vivado/settings64.csh    # for Vivado
+source /eda/xilinx/2026.1/Vitis/settings64.csh     # for Vitis
+```
+
+{: .important }
+> Always confirm which version you actually have before starting work:
+>
+> ```bash
+> vivado -version
+> vitis --version
+> ```
+>
+> If either reports 2023.2, you are on the old tools and have not sourced the
+> settings file.  (Note the inconsistent flags: `vivado` takes one dash,
+> `vitis` takes two.)
+
+If you would rather not type this at every login, you can add the `source` lines
+to the end of your own `~/.tcshrc`, below the other settings described above.
+Only do this if you are not also taking a course that needs the 2023.2 tools,
+since it changes the default for every session.
+
 ## Launching Vitis and Vivado
 
 Once you have SSH-ed or connected via Fast-X into one of the NYU EDA servers, 
