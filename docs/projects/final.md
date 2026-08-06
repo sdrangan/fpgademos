@@ -1,7 +1,7 @@
 ---
 title: Final Submission
 parent: Project
-nav_order: 3
+nav_order: 4
 has_children: false
 ---
 
@@ -14,7 +14,7 @@ The GitHub repo should contain **all documentation, code, and results** needed f
 
 The LLM grader can only assess what it can read directly from your repository, so your repo must include:
 
-- Clear, well‑organized Markdown files (`initial_plan.md`, `detailed_plan.md`, `README.md`, etc.)  
+- Clear, well‑organized Markdown files — a `README.md` describing what you built, with your [planning documents](./plan.md) in a `plans/` directory  
 - All RTL/HLS source code and testbench files  
 - Simulation outputs, logs, or result summaries  
 - Any diagrams, tables, or explanations referenced in your write‑up  
