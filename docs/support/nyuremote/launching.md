@@ -23,12 +23,27 @@ unsetenv LD_PRELOAD
 ```
 
 That fixes the current shell only.  To avoid retyping it at every login, add the
-same line to the end of your own `~/.tcshrc` — the file you already edited when
-[setting up Python](./python.md):
+same line to the **end** of your own `~/.tcshrc`.  Your account ships with a
+`~/.tcshrc` that sources the EDA setup files first and applies your own settings
+afterwards, so anything you add at the bottom takes precedence:
 
 ```bash
+# Sources of all application files  (installed by NYU IT)
+source ~/tcshrc_cadence_local
+source ~/tcshrc_mentor_local
+source ~/tcshrc_synopsys_local
+source ~/tcshrc_xilinx_local
+echo 'EDA tools: environment files sourced'
+
+# Your own settings
+setenv PATH "$HOME/.local/bin:$PATH"
+unsetenv PYTHONPATH
 unsetenv LD_PRELOAD
 ```
+
+The `PATH` and `PYTHONPATH` lines come from [setting up Python](./python.md); the
+`LD_PRELOAD` line is the one to add here.  Because they sit below the `source`
+commands, they override whatever the EDA files set.
 
 Then open a fresh login and confirm it is gone:
 
@@ -36,17 +51,16 @@ Then open a fresh login and confirm it is gone:
 echo $LD_PRELOAD
 ```
 
-This should print nothing.  If it still shows a value, your `~/.tcshrc` is being
-read *before* the Cadence settings; in that case keep using the one-off
-`unsetenv LD_PRELOAD` after logging in, and let the instructor know.
+This should print nothing.
 
 {: .warning }
-> Do **not** edit `tcshrc_cadence_local` itself.  It belongs to the NYU IT
-> department's setup and is shared with other classes that *do* use Cadence, so
-> changing it could break a different course you are taking.  It may also be
-> restored without warning when accounts are re-provisioned, silently undoing
-> your change.  Unsetting the variable in your own `~/.tcshrc` has the same
-> effect, is reversible, and affects nobody else.
+> Do **not** delete the line from `~/tcshrc_cadence_local` itself.  NYU IT
+> installs those files into your home directory and may replace them when
+> accounts are re-provisioned — silently undoing your change and leaving you to
+> rediscover the problem.  You may also need Cadence for another course.
+> Unsetting the variable at the end of your own `~/.tcshrc` has exactly the same
+> effect, survives IT updates, and is a single line to remove if you ever want
+> the original behaviour back.
 
 
 ## Launching Vitis and Vivado
