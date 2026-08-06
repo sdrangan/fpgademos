@@ -9,9 +9,28 @@ nav_sort: case_insensitive
 search_enabled: true
 
 # Markdown options
-markdown: kramdown  
+markdown: kramdown
 kramdown:
   input: GFM
+
+# Callouts. Without this block just-the-docs emits no CSS for .note/.warning,
+# so `{: .note }` markers render as plain blockquotes with no styling.
+# Usage — the marker must sit directly above the block, with NO blank line:
+#
+#     {: .warning }
+#     > Text of the warning.
+#
+callouts_level: loud
+callouts:
+  note:
+    title: Note
+    color: blue
+  warning:
+    title: Warning
+    color: red
+  important:
+    title: Important
+    color: yellow
 
 # Optional: GitHub repo link
 github_repo_url: "https://github.com/sdrangan/hwdesign"

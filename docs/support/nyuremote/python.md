@@ -27,7 +27,7 @@ It requires **no sudo access** and works perfectly on the NYU servers.
 Log into the EDA server:
 
 ```bash
-ssh <netid>@ecs02.poly.edu
+ssh <netid>@ecs03.poly.edu
 ```
 
 Then install `uv` into your home directory:
@@ -160,7 +160,7 @@ source .venv/bin/activate      # for bash
 Your prompt should now show something like:
 
 ```
-(.venv) <netid>@ecs02:~/hwdesign$
+(.venv) <netid>@ecs03:~/hwdesign$
 ```
 
 You can deactivate with:
