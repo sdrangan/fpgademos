@@ -38,10 +38,16 @@ Your repo will become the central artifact of your project — treat it as a pro
 ## Initial Plan
 
 Create a file named something like `initial_plan.md` in your repo.  
-This document should contain **two main sections**, written clearly and concisely.
-I will put some [examples](./examples/) if you want some ideas.  
+This document should contain **three short sections**, written clearly and concisely.
+I will put some [examples](./example_plans/) if you want some ideas.  
 
-### 1. IP Definition
+### 1. Project Team
+
+List the members of your project team by name. Each project needs **at least two
+students**. A one‑person submission will be accepted, but you will be told to find
+a partner.
+
+### 2. IP Definition
 
 Describe:
 
@@ -56,7 +62,7 @@ Describe:
 
 A good IP definition makes the intended behavior unambiguous.
 
-### 2. IP Architecture
+### 3. IP Architecture
 
 Describe:
 
@@ -79,6 +85,45 @@ To submit your initial plan to the LLM grader:
 
 The grader has been provided with the rubric for this stage and will give structured feedback.  
 You are encouraged to use AI extensively while drafting this document — the clearer your plan, the more effective AI will be in later stages.
+
+### Grading the Initial Plan (20 points)
+
+This submission is scored entirely by the LLM grader — unlike the
+[final submission](./final.md), the instructor does not adjust the result.
+
+| Category | Points | What earns credit |
+|---|---|---|
+| **a. GitHub repo** | 2 | A link to the repo, page, or file holding the outline |
+| **b. Project team** | 2 | Team members clearly named — you need **at least two students** |
+| **c. IP definition** | 6 | What the IP does and the mathematical operations it performs (4) · why those operations suit hardware acceleration (2) |
+| **d. IP architecture** | 10 | Sub‑modules described (5) · interfaces described (5) · up to **−2** if one module is oversized |
+
+Where points are most often lost:
+
+- **Submitting without a repo link.** You may paste the outline directly into the
+  submission box instead, and the other 18 points are still available — but the
+  2 repo points are not. Create the repo.
+- **Vague mathematics.** "It processes the signal" does not earn the 4 points.
+  Name the operation — matrix multiply, FIR filter, FFT, sorting network — and
+  include pseudo‑code or a Python snippet if the operation is unusual. Standard
+  operations do not need elaborate detail.
+- **Weak motivation.** "Hardware is faster" earns nothing for the 2 motivation
+  points. Say *why*: the operation is computationally intensive, highly
+  parallel, or latency‑critical.
+- **Vague interfaces.** Naming an interface is not enough. Say whether you are
+  using AXI4‑Stream, FIFOs, or shared memory, and state what information each
+  one carries.
+- **One large module.** A single module is acceptable if the design is genuinely
+  small, but an oversized monolithic block costs up to 2 points. Decomposing it
+  also gives you more parallelism.
+
+The grader will also suggest existing AMD IPs — an FFT core, for example — where
+one could replace something you were planning to build yourself. Following that
+advice does not cost you points, and it usually saves effort.
+
+{: .note }
+> Before clicking **Grade**, select a high‑reasoning model such as `gpt-5.4` using
+> the gear icon beside the Grade button. You may submit as many times as you like.
 
 ---
 
