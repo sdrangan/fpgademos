@@ -24,56 +24,74 @@ If someone — **or an automated tool like the LLM grader** — opened your repo
 
 # Final Grading (25 points total)
 
-The LLM grader will provide an **initial assessment** and
-the instructor will make the **final determination** for all items.
+Grading happens in two stages:
 
----
+1. **LLM grader — 20 points.** An explicit rubric applied automatically to your repository.
+2. **Instructor assessment — 0 to 5 points.** Added on top of the grader's score.
 
-## 1. IP Definition and Interface (6 points)
+## LLM grader rubric (20 points)
 
-Evaluates whether the final implementation matches a clear, well‑defined specification.
+The grader reads your repository but **does not execute anything**. Every claim
+therefore has to be supported by something it can read — documentation, result
+tables, logs, or committed synthesis reports.
 
-- Is the purpose of the IP clearly defined and appropriate for the chosen task  
-- Are any mathematical operations clearly defined  
-- Is the hardware/software boundary well‑justified  
-- Are the interfaces (AXI, streaming, custom, etc.) clearly documented  
-- Have the initial planning documents been updated to reflect the final design  
+| Category | Points | What earns credit |
+|---|---|---|
+| **a. IP interface definition** | 4 | Core operations clearly defined (2) · messages and interfaces defined (2) |
+| **b. IP design** | 6 | Architecture described (3) · design efficiency considered (3) |
+| **c. Verification and evaluation** | 7 | Functional verification evidence (4) · performance and resource results (3) |
+| **d. Organization and documentation** | 3 | Reproducibility and automation (3) · up to **−1** for a cluttered or incomplete repo |
 
-It is completely acceptable if your design deviated from the original plan — that is the nature of research and learning. What matters is that the final documentation clearly explains the design you actually built.
----
+What each category is looking for:
 
-## 2. Architecture and Implementation Quality (8 points)
+- **IP interface definition** — the computation the accelerator performs, specific
+  enough that a reader can tell what inputs become what outputs; and the
+  interfaces to the rest of the system (AXI4‑Stream, AXI‑Lite, shared memory,
+  FIFOs, DMA, register maps), including what information they actually carry.
+- **IP design** — a coherent top‑level architecture with its major blocks and how
+  they connect, plus explicit reasoning about efficiency: pipelining,
+  parallelism, buffering, reuse, memory access. A simple design is fine as long
+  as you show you considered the tradeoffs.
+- **Verification and evaluation** — credible evidence of functional correctness
+  (simulation results, reference comparisons, testbench output), *and* synthesis
+  or implementation numbers (latency, throughput, clock, utilization) interpreted
+  against the goals you set.
+- **Organization and documentation** — clear instructions plus some real
+  automation: scripts, make targets, `.tcl` flows, or notebooks with a documented
+  execution path. A README alone earns partial credit.
 
+{: .warning }
+> **The grader cross‑checks your documentation against your code.** If your
+> write‑up claims a feature — a pipelined loop, an unrolled loop, a particular
+> interface — the grader looks for the corresponding pragma or structure in your
+> `.cpp`, `.h`, or `.tcl` files. If the claim is not backed by the code, that
+> sub‑criterion is scored **0** and the discrepancy is noted. Make claims you can
+> point to, and link to specific files where you can.
 
-This category emphasizes **architectural decisions** and the quality of the implementation.
+## Instructor assessment (0–5 points)
 
-- Is the architecture coherent, modular, and well‑reasoned 
-- Are sub‑modules clearly defined with limited functionality in each module  
-- Are communication paths and dataflow well‑designed  
-- Are the control and configuration of each module sufficiently general?
-- Are architectural choices (pipelining, buffering, parallelism, memory layout, etc.) justified   
-- Is the code readable, maintainable, and appropriately commented  
+After the grader runs, the instructor reviews the result and adds between **0 and
+5 points**. This covers what an automated rubric cannot judge — for example the
+in‑class presentation, the ambition of the project, or work that is clearly
+strong but does not map neatly onto a rubric line.
 
-Again, these documents can follow updated versions of the original planning documents.
----
+## Practical advice
 
-## 3. Evaluation and Verification (6 points)
+- **Use `README.md` or `index.md`.** Markdown is the most AI‑readable format.
+  Link out to sub‑pages for individual modules.
+- **Commit your evidence.** The grader will not run your code, so synthesis
+  reports and summary tables must be *in* the repository to earn verification
+  credit.
+- **Keep the repo clean.** Vivado and Vitis logs, journals, caches, and simulator
+  output cost you up to a point if they make the repo hard to inspect. A large
+  repo is fine if it is organized and the project files are easy to find.
+- **Iterate before submitting.** You are encouraged to run the grader on your
+  repository — or use other AI tools — and refine the design and documentation in
+  response.
+- **Check your grader settings.** Select a high‑reasoning model (for example
+  `gpt-5.4`) via the gear icon in the preferences dialog, and set the timeout to
+  at least 100 seconds so the grader has time to inspect the repo.
 
-Assesses the rigor and completeness of the testbench and evaluation.
-
-- Is the testbench comprehensive and does it cover corner cases  
-- Are correctness checks clearly defined and implemented  
-- Are performance, latency, or resource usage measured and interpreted  
-- Are results reproducible from the repository  
-- Does the evaluation provide automatable and reproducible tests
-  
----
-
-## 4. Presentation (5 points)
-
-Includes both the **in‑class presentation** and the **repository presentation**.
-Presentations can be in any form you want:  slides, readme, notebook, or PDF.
-
-- Clear explanation of the problem, design, and results
-- Does the presentation quickly provide key aspects of the design while also providing sufficient deatils  
-- Are key metrics highlighted
+It is completely acceptable if your design deviated from the original plan — that
+is the nature of research and learning. What matters is that the final
+documentation clearly explains the design you actually built.
