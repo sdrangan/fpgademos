@@ -7,7 +7,10 @@ name = "hwdesign"
 version = "0.1.0"
 description = "Course-specific helpers for the Introduction to Hardware Design course, built on top of waveflow"
 readme = {file = "readme.md", content-type = "text/markdown"}
-requires-python = ">=3.9"
+# Must stay >= waveflow's own floor (currently >=3.10). Declaring anything lower
+# is a lie: hwdesign cannot function without waveflow, so an older interpreter
+# fails at dependency resolution instead of here, with a confusing error.
+requires-python = ">=3.10"
 license = {text = "BSD-3-Clause"}
 authors = [
   {name = "Sundeep Rangan", email = "srangan@nyu.edu"},
@@ -24,6 +27,26 @@ classifiers = [
 # (waveflow==X.Y.Z) when the course runs (~Sept 2026).
 dependencies = [
   "waveflow",
+
+  # The course material is delivered as notebooks (30 tracked .ipynb files), so
+  # the notebook toolchain is a genuine course requirement rather than a
+  # developer convenience. waveflow correctly does not depend on Jupyter -- it
+  # is a library -- so this belongs here.
+  "jupyterlab>=4.0",
+  "ipykernel>=6.0",
+
+  # STOPGAP -- remove once waveflow declares it upstream.
+  # waveflow imports matplotlib (waveflow/utils/timing.py, utils/vcd.py,
+  # calib/calib.py) but omits it from its own dependencies. Verified against a
+  # clean install from GitHub on 2026-08-05: "from waveflow.utils.timing import
+  # TimingDiagram" raises ModuleNotFoundError: No module named 'matplotlib'.
+  # Declaring it here unblocks the course; the real fix is upstream, since
+  # anyone installing waveflow alone still hits it.
+  #
+  # waveflow also imports scipy without declaring it, but scipy arrives
+  # transitively via scikit-learn, so it is not listed here. That is luck
+  # rather than design and should still be fixed upstream.
+  "matplotlib>=3.7",
 ]
 
 [tool.setuptools]

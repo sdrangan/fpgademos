@@ -8,10 +8,61 @@ url: "https://sdrangan.github.io"
 nav_sort: case_insensitive
 search_enabled: true
 
+# Files and directories Jekyll should not build into the site.
+#
+# These are repository working files, not course content. Without this they are
+# rendered as pages and appear as stray top-level entries in the sidebar nav,
+# titled from their first heading (e.g. "hwdesign -> waveflow Migration Plan").
+#
+# Do NOT add units/, demos/, or labs/ here: pages under docs/ link directly to
+# problem-set HTML, notebooks, and slides inside them, and excluding them would
+# turn those links into 404s.
+#
+# Note that setting `exclude` replaces Jekyll's built-in default list rather
+# than adding to it, so the usual defaults are repeated below.
+exclude:
+  # Jekyll defaults
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/
+  # Repository working files, not part of the course site
+  - plans/
+  - gradescope/
+  - extra/
+  - hwdesign/
+  - readme.md
+  - requirements.txt
+  - requirements-loose.txt
+  - requirements-dev.txt
+  - pyproject.toml
+
 # Markdown options
-markdown: kramdown  
+markdown: kramdown
 kramdown:
   input: GFM
+
+# Callouts. Without this block just-the-docs emits no CSS for .note/.warning,
+# so `{: .note }` markers render as plain blockquotes with no styling.
+# Usage — the marker must sit directly above the block, with NO blank line:
+#
+#     {: .warning }
+#     > Text of the warning.
+#
+callouts_level: loud
+callouts:
+  note:
+    title: Note
+    color: blue
+  warning:
+    title: Warning
+    color: red
+  important:
+    title: Important
+    color: yellow
 
 # Optional: GitHub repo link
 github_repo_url: "https://github.com/sdrangan/hwdesign"
