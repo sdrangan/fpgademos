@@ -12,7 +12,7 @@ has_children: false
 To simulate the kernel and testbench:
 
 - Open a command terminal (not Powershell) in Windows, or Unix terminal in IoS/Unix
-- [Set the paths for the Vitis HLS tools](../../support/amd/lauching.md)
+- [Set the paths for the Vitis HLS tools](../../support/amd/launching.md)
 - Run the TCL script
 
 ```bash

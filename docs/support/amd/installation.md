@@ -74,4 +74,4 @@ Note that  Xilinx files are often not backward compatible, meaning that projects
 If you are installing on Windows, the TA Ruibin Chen has provided some helpful
 [further instructions](./install_win.md).
 
-Otherwise, go to [launching Vitis and Vivado](./lauching.md)
+Otherwise, go to [launching Vitis and Vivado](./launching.md)

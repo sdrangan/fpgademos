@@ -53,7 +53,7 @@ The testbench can be run by using the `xilinxutils` function (if you are running
 code on the NYU server, go to the next section):
 - Open a terminal in Unix or command window in Windows (On Windows, you cannot use Powershell)
 - Activate the virtual environment with the `xilinxutils` package
-- Follow the [instructions](../../docs/support/amd/lauching.md) to set the path for Vivado tools
+- Follow the [instructions](../../support/amd/launching.md) to set the path for Vivado tools
 - Navigate to the `hwdesign/labs/subc` directory
 - Run
 

@@ -34,7 +34,7 @@ You can run the testbench with:
 - Open a command terminal on Windows or Linux
    - On Windows, do not use a power shell
 - [Activate](../../support/repo/package.md) the hwdesign virtual environment
-- [Set the path for the Vivado command line tools](../../support/amd/lauching.md)
+- [Set the path for the Vivado command line tools](../../support/amd/launching.md)
 - Navigate to `hwdesign/demos/fixp`
 - In the command terminal run
 

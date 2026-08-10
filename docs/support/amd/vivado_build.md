@@ -39,7 +39,7 @@ board so we need separate projects.
 
 To create a Vivado project, say `scalar_fun_pynqz2`:
 
-* [Launch Vivado](./lauching.md)
+* [Launch Vivado](./launching.md)
 * Select the menu option **File->Project->New...**.  
    * For the project name, use `scalar_fun_pynz2`.  
    * In location, use the directory `hwdesign/scalar_fun`.  The Vivado project will then be stored in `scalar_fun/scalar_fun_pynqz2`.

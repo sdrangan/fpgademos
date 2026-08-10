@@ -46,7 +46,7 @@ entirely with command line utilities.  This note will provide you the steps for 
 The steps for the simulating a project with source and testbench
 SystemVerilog files with the Vivado GUI is as follows:
 
-* [Launch the Vivado GUI](./lauching.md)
+* [Launch the Vivado GUI](./launching.md)
    * Note that if you are on the [NYU server](../nyuremote/), you will need to
    follow slightly [different instructions](../nyuremote/launching.md). 
 * Select the menu option **File->Project->New...**.  
