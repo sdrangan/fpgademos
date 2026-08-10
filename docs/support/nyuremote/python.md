@@ -1,7 +1,7 @@
 ---
 title: Using Python
 parent: NYU Remote Server
-nav_order: 4
+nav_order: 5
 has_children: False
 ---
 # Using Python
@@ -217,10 +217,9 @@ environment is not activated.  If it raises an error mentioning `pysilicon`,
 that is unmigrated course material rather than a broken install — see the note
 at the end of [Installing the Python packages](../repo/package.md).
 
-If instead you see a shared-library or missing-symbol error before Python even
-starts, that is the `LD_PRELOAD` misconfiguration on the EDA servers, not a
-problem with your environment — see
-[Environment Variable Problem](./launching.md#environment-variable-problem).
+(An earlier build of the EDA servers set a stray `LD_PRELOAD` that produced
+shared-library errors before Python even started. Those configuration files have
+since been removed, so this should no longer occur.)
 
 ## 5. Running Python
 
