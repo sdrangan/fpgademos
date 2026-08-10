@@ -30,7 +30,7 @@ As the project is designed and synthesized many new files will be created.  But,
 Once you have written the design files for the Vitis IP, you can create the project either manually or via a script.  
 For the manual method, the steps for the example `vmult_vitis` are as follows.  You can modify them for any other project.
 
-* [Launch Vitis HLS](./lauching.md)
+* [Launch Vitis HLS](./launching.md)
 * Go to **File → New Component → HLS**.  You will set a sequence of items:
    * For **Component name** select `hls_component`
    * For **Component location** select `hwdesign/vector_mult/vmult_vitis`

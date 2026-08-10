@@ -12,7 +12,7 @@ has_children: false
 The GUI is a good option if you like a complete graphical
 interface where you can easily see the options and manually step
 through the process one step at a time.
-If you wish to pursue this option, first [launch the Vitis GUI](../../support/amd/lauching.md).
+If you wish to pursue this option, first [launch the Vitis GUI](../../support/amd/launching.md).
 Note that if you are on the [NYU server](../../support/nyuremote/),
 you will need to open a GUI terminal with [Fast-X connect](../../support/nyuremote/fastx.md).
 

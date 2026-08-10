@@ -46,7 +46,7 @@ Once you have set up the testbench, you can run the test from the command line u
 
 - Open a terminal in Unix or command window in Windows (On Windows, you cannot use Powershell)
 - Activate the virtual environment with the `xilinxutils` package
-- Follow the [instructions](../../docs/support/amd/lauching.md) to set the path for Vivado tools
+- Follow the [instructions](../../support/amd/launching.md) to set the path for Vivado tools
 - Navigate to the `hwdesign/labs/subc` directory
 - Run
 

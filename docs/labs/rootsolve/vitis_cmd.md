@@ -62,7 +62,7 @@ That way you can first make sure the C-simulation works.
 ## Running the Vitis Command Line
 
 We are now ready to run the C simulation and/or RTL simulation from
-the command line.  You should follow the [instructions](../../support/amd/lauching.md).
+the command line.  You should follow the [instructions](../../support/amd/launching.md).
 
 * Open a terminal:
     - In Windows, open a Command Shell, not a Powershell.  

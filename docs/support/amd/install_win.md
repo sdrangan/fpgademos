@@ -65,4 +65,4 @@ Successfully Installed：
 
 ---
 
-Next:  Go to [launching Vitis and Vivado](./lauching.md)
+Next:  Go to [launching Vitis and Vivado](./launching.md)

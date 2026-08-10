@@ -62,7 +62,7 @@ to load it per session.
 `vitis` and `vivado` with no arguments open full graphical applications. Over a plain
 SSH connection they have nowhere to draw and will fail or hang. Connect with
 [Fast-X](./fastx.md) first, or use the command-line tools instead — see
-[Launching Vitis and Vivado](../amd/lauching.md) for what each tool does and for the
+[Launching Vitis and Vivado](../amd/launching.md) for what each tool does and for the
 batch-mode commands such as `vitis-run --mode hls` and `xsim`.
 
 ---

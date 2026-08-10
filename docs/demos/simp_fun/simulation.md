@@ -15,7 +15,7 @@ It can be used as follows:
 
 * Open a terminal window in Linux or command prompt window in Windows
     * In Windows, do not use PowerShell.
-* Follow the command to [set the path](../../support/amd/lauching.md) for the command-line utilities
+* Follow the command to [set the path](../../support/amd/launching.md) for the command-line utilities
 * [Activate the virtual environment](../../support/repo/package.md) for the `waveflow` and `hwdesign` packages
 * Run the command:
 

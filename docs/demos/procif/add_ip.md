@@ -17,7 +17,7 @@ and add it to an FPGA project.
 
 To package the IP:
 
-* [Luanch the Vitis GUI](../../support/amd/lauching.md) and open the workspace for the `scalar_fun` project
+* [Luanch the Vitis GUI](../../support/amd/launching.md) and open the workspace for the `scalar_fun` project
 * In the **FLOW** panel (left sidebar), select select **Package → Run**.  
   This wraps the synthesized RTL into a reusable IP block, complete with metadata and interface definitions.
 * The packaging will have created a directory of files containing the *IP* for the adder.  It will be located in 

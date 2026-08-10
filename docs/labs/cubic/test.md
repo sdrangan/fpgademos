@@ -28,7 +28,7 @@ Change `FBITS=8` or `FBITS=12` as needed.  I would first test `FBITS=8` since th
 
 - Open a terminal in Unix or command window in Windows (On Windows, you cannot use Powershell)
 - Activate the virtual environment with the `xilinxutils` package
-- Follow the [instructions](../../docs/support/amd/lauching.md) to set the path for Vivado tools
+- Follow the [instructions](../../support/amd/launching.md) to set the path for Vivado tools
 - Navigate to the `hwdesign/labs/subc` directory
 - Run
 
