@@ -30,6 +30,7 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import numpy as np
+import pandas as pd
 
 from waveflow.build.build import BuildConfig, BuildDag, BuildStep, SourceStep
 from waveflow.build.cli import run_dag_cli
@@ -105,30 +106,39 @@ def int_prod_inputs(width: int = W) -> tuple[np.ndarray, np.ndarray]:
     return np.concatenate([ca, ga]), np.concatenate([cb, gb])
 
 
+#: Columns of the int_prod vector files, in the order the testbench writes them.
+INT_PROD_COLS = ["a", "b", "prod", "hi", "lo", "trunc", "sat", "overflow", "hi_nonzero"]
+
+
 def gen_int_prod_vectors(vec_dir: Path, width: int = W) -> Path:
-    """Write ``int_prod_in.txt`` (the stimulus) and ``int_prod_golden.txt`` (Python's answer)."""
+    """Write ``int_prod_in.csv`` (the stimulus) and ``int_prod_golden.csv`` (Python's answer).
+
+    CSV rather than a bare text file: it is what the rest of the course uses, the
+    header names the columns so neither side has to remember an order, and pandas
+    reads and writes it in one line at each end.
+    """
     vec_dir = Path(vec_dir)
     vec_dir.mkdir(parents=True, exist_ok=True)
     a, b = int_prod_inputs(width)
     model = int_prod_model(a, b, width)
 
-    in_path = vec_dir / "int_prod_in.txt"
-    in_path.write_text("".join(f"{x} {y}\n" for x, y in zip(a, b)), encoding="utf-8")
+    golden = pd.DataFrame({c: np.asarray(model[c], dtype=np.int64) for c in INT_PROD_COLS})
+    golden.to_csv(vec_dir / "int_prod_golden.csv", index=False)
 
-    cols = ["a", "b", "prod", "hi", "lo", "trunc", "sat", "overflow", "hi_nonzero"]
-    rows = ["  ".join(str(int(model[c][i])) for c in cols) for i in range(len(a))]
-    (vec_dir / "int_prod_golden.txt").write_text(
-        " ".join(cols) + "\n" + "\n".join(rows) + "\n", encoding="utf-8")
+    in_path = vec_dir / "int_prod_in.csv"
+    golden[["a", "b"]].to_csv(in_path, index=False)
     return in_path
 
 
 def check_int_prod(vec_dir: Path, report_path: Path) -> Path:
     """Compare the SystemVerilog outputs against the Python golden model, row by row."""
-    vec_dir, report_path = Path(vec_dir), Path(report_path)
-    cols = ["a", "b", "prod", "hi", "lo", "trunc", "sat", "overflow", "hi_nonzero"]
-    golden = _read_table(vec_dir / "int_prod_golden.txt", cols)
-    actual = _read_table(vec_dir / "int_prod_sv.txt", cols)
-    return _write_report("int_prod", golden, actual, cols, report_path)
+    vec_dir = Path(vec_dir)
+    return _compare(
+        "int_prod",
+        pd.read_csv(vec_dir / "int_prod_golden.csv"),
+        pd.read_csv(vec_dir / "int_prod_sv.csv"),
+        Path(report_path),
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -159,8 +169,12 @@ def unpack_sample_bad(word: int, dw: int = DW) -> int:
     return (word >> dw) & ((1 << dw) - 1)
 
 
+#: Columns of the samp_pack vector files, in the order the testbench writes them.
+SAMP_PACK_COLS = ["t", "re", "im", "word", "t_out", "re_out", "im_out", "re_bad"]
+
+
 def gen_samp_pack_vectors(vec_dir: Path, nsamp: int = NSAMP, seed: int = SEED) -> Path:
-    """Write ``samp_pack_in.txt`` and ``samp_pack_golden.txt``.
+    """Write ``samp_pack_in.csv`` and ``samp_pack_golden.csv``.
 
     The timestamp is a counter rather than a random value — that is what a real
     sample stream carries, and it makes the I/Q plot's colouring meaningful.
@@ -178,36 +192,40 @@ def gen_samp_pack_vectors(vec_dir: Path, nsamp: int = NSAMP, seed: int = SEED) -
                          rng.integers(lo, hi + 1, nsamp - len(edge), dtype=np.int64)])
     t = np.arange(nsamp, dtype=np.int64) % (1 << TW)
 
-    in_path = vec_dir / "samp_pack_in.txt"
-    in_path.write_text("".join(f"{a} {b} {c}\n" for a, b, c in zip(t, re, im)),
-                       encoding="utf-8")
+    words = [pack_sample(int(a), int(b), int(c)) for a, b, c in zip(t, re, im)]
+    unpacked = [unpack_sample(w) for w in words]
+    golden = pd.DataFrame({
+        "t": t, "re": re, "im": im,
+        "word": np.asarray(words, dtype=np.int64),
+        "t_out": [u[0] for u in unpacked],
+        "re_out": [u[1] for u in unpacked],
+        "im_out": [u[2] for u in unpacked],
+        "re_bad": [unpack_sample_bad(w) for w in words],
+    })[SAMP_PACK_COLS]
+    golden.to_csv(vec_dir / "samp_pack_golden.csv", index=False)
 
-    cols = ["t", "re", "im", "word", "t_out", "re_out", "im_out", "re_bad"]
-    rows = []
-    for ti, ri, ii in zip(t, re, im):
-        word = pack_sample(int(ti), int(ri), int(ii))
-        to, ro, io = unpack_sample(word)
-        rows.append("  ".join(str(v) for v in
-                              (ti, ri, ii, word, to, ro, io, unpack_sample_bad(word))))
-    (vec_dir / "samp_pack_golden.txt").write_text(
-        " ".join(cols) + "\n" + "\n".join(rows) + "\n", encoding="utf-8")
+    in_path = vec_dir / "samp_pack_in.csv"
+    golden[["t", "re", "im"]].to_csv(in_path, index=False)
     return in_path
 
 
 def check_samp_pack(vec_dir: Path, report_path: Path) -> Path:
     """Cross-language equality, plus the round-trip property, over every sample."""
     vec_dir, report_path = Path(vec_dir), Path(report_path)
-    cols = ["t", "re", "im", "word", "t_out", "re_out", "im_out", "re_bad"]
-    golden = _read_table(vec_dir / "samp_pack_golden.txt", cols)
-    actual = _read_table(vec_dir / "samp_pack_sv.txt", cols)
-    report = _write_report("samp_pack", golden, actual, cols, report_path, raise_on_fail=False)
+    golden = pd.read_csv(vec_dir / "samp_pack_golden.csv")
+    actual = pd.read_csv(vec_dir / "samp_pack_sv.csv")
+    report = _compare("samp_pack", golden, actual, report_path, raise_on_fail=False)
 
-    bad = [i for i in range(len(golden["t"]))
-           if (actual["t_out"][i], actual["re_out"][i], actual["im_out"][i])
-           != (golden["t"][i], golden["re"][i], golden["im"][i])]
-    if bad:
+    # The round-trip property, checked against what the hardware actually produced:
+    # what came out must equal what went in.
+    got = actual[["t_out", "re_out", "im_out"]].to_numpy()
+    sent = golden[["t", "re", "im"]].to_numpy()
+    bad = np.flatnonzero((got != sent).any(axis=1))
+    if bad.size:
         raise RuntimeError(
-            f"STOP — round-trip failed on {len(bad)} sample(s); first at row {bad[0]}")
+            f"STOP — round-trip failed on {bad.size} sample(s); first at row {int(bad[0])}: "
+            f"sent {sent[bad[0]].tolist()}, got back {got[bad[0]].tolist()}")
+
     data = json.loads(report.read_text(encoding="utf-8"))
     data["round_trip_ok"] = True
     report.write_text(json.dumps(data, indent=2), encoding="utf-8")
@@ -221,47 +239,51 @@ def check_samp_pack(vec_dir: Path, report_path: Path) -> Path:
 # Shared comparison helpers
 # ---------------------------------------------------------------------------
 
-def _read_table(path: Path, cols: list[str]) -> dict[str, list[int]]:
-    lines = Path(path).read_text(encoding="utf-8").strip().splitlines()
-    if not lines:
-        raise RuntimeError(f"{path} is empty — did the simulation run?")
-    header, *body = lines
-    names = header.split()
-    if names != cols:
-        raise RuntimeError(f"{path}: expected columns {cols}, found {names}")
-    out: dict[str, list[int]] = {c: [] for c in cols}
-    for line in body:
-        for name, value in zip(cols, line.split()):
-            out[name].append(int(value))
-    return out
+def _compare(part: str, golden: pd.DataFrame, actual: pd.DataFrame, report_path: Path,
+             *, raise_on_fail: bool = True) -> Path:
+    """Compare two result tables and write a JSON report; raise on the first disagreement.
 
-
-def _write_report(part, golden, actual, cols, report_path: Path,
-                  *, raise_on_fail: bool = True) -> Path:
-    n_golden, n_actual = len(golden[cols[0]]), len(actual[cols[0]])
-    first_diff = None
-    if n_golden != n_actual:
-        first_diff = {"reason": "row count", "python": n_golden, "systemverilog": n_actual}
-    else:
-        for i in range(n_golden):
-            for c in cols:
-                if golden[c][i] != actual[c][i]:
-                    first_diff = {"row": i, "column": c,
-                                  "python": golden[c][i], "systemverilog": actual[c][i]}
-                    break
-            if first_diff:
-                break
-
+    Both sides are DataFrames read from CSV, so the columns are matched by *name*
+    rather than by position — the testbench and the model cannot silently drift
+    into different column orders.
+    """
     report_path = Path(report_path)
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text(json.dumps({
-        "part": part, "rows": n_golden, "match": first_diff is None,
-        "first_diff": first_diff,
-    }, indent=2), encoding="utf-8")
 
-    if first_diff is not None and raise_on_fail:
+    summary: dict[str, Any] = {"part": part, "rows": len(golden), "match": False,
+                               "first_diff": None, "differing_columns": []}
+
+    if list(golden.columns) != list(actual.columns):
+        summary["first_diff"] = {"reason": "columns",
+                                 "python": list(golden.columns),
+                                 "systemverilog": list(actual.columns)}
+    elif len(golden) != len(actual):
+        summary["first_diff"] = {"reason": "row count",
+                                 "python": len(golden), "systemverilog": len(actual)}
+    else:
+        # DataFrame.compare keeps only the cells that differ, so this is the whole
+        # disagreement rather than just the first one -- useful when a width is
+        # wrong and an entire column is off.
+        diff = golden.compare(actual, result_names=("python", "systemverilog"))
+        if not diff.empty:
+            row = int(diff.index[0])
+            column = str(diff.columns[0][0])
+            summary["differing_columns"] = sorted({str(c[0]) for c in diff.columns})
+            summary["differing_rows"] = int(len(diff))
+            summary["first_diff"] = {
+                "row": row, "column": column,
+                "a": int(golden.loc[row, golden.columns[0]]),
+                "python": int(golden.loc[row, column]),
+                "systemverilog": int(actual.loc[row, column]),
+            }
+
+    summary["match"] = summary["first_diff"] is None
+    report_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+
+    if not summary["match"] and raise_on_fail:
         raise RuntimeError(
-            f"STOP — SystemVerilog disagreed with the Python golden model: {first_diff}")
+            f"STOP — SystemVerilog disagreed with the Python golden model: "
+            f"{summary['first_diff']}")
     return report_path
 
 
@@ -343,8 +365,7 @@ def plot_samp_pack(vec_dir: Path, out_dir: Path, images_dir: Path) -> list[Path]
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    cols = ["t", "re", "im", "word", "t_out", "re_out", "im_out", "re_bad"]
-    g = _read_table(Path(vec_dir) / "samp_pack_golden.txt", cols)
+    g = pd.read_csv(Path(vec_dir) / "samp_pack_golden.csv")
 
     fig, (ax0, ax1) = plt.subplots(1, 2, figsize=(11.5, 5))
     s0 = ax0.scatter(g["re"], g["im"], c=g["t"], cmap="viridis", s=28)
@@ -390,7 +411,7 @@ _IMAGES = Path("../../docs/demos/datatypes/images")
 class IntProdGenStep(BuildStep):
     description = "Python golden model for int_prod; writes the stimulus and expected outputs."
     consumes = ["int_prod_source"]
-    produces = {"int_prod_vectors": Path("vectors/int_prod_in.txt")}
+    produces = {"int_prod_vectors": Path("vectors/int_prod_in.csv")}
     params: ClassVar[dict] = {}
 
     def run(self, config: BuildConfig, **_) -> dict[str, Any]:
@@ -427,7 +448,7 @@ class IntProdDocsStep(BuildStep):
 class SampPackGenStep(BuildStep):
     description = "Python golden model for samp_pack; writes 100 samples and their packed words."
     consumes = ["samp_pack_source"]
-    produces = {"samp_pack_vectors": Path("vectors/samp_pack_in.txt")}
+    produces = {"samp_pack_vectors": Path("vectors/samp_pack_in.csv")}
     params: ClassVar[dict] = {}
 
     def run(self, config: BuildConfig, **_) -> dict[str, Any]:
@@ -475,7 +496,7 @@ def build_datatypes_dag() -> BuildDag:
         sim_artifact="int_prod_sim",
         # Declaring what the testbench writes, not just the scratch directory, is what makes
         # freshness mean anything here: a run that died before writing still leaves sim/.
-        outputs={"int_prod_sv": Path("vectors/int_prod_sv.txt")},
+        outputs={"int_prod_sv": Path("vectors/int_prod_sv.csv")},
         sim_dir=Path("sim/int_prod"),
         plusargs={"vecdir": Path("vectors")},
     ))
@@ -491,7 +512,7 @@ def build_datatypes_dag() -> BuildDag:
         tb=_SOURCE_DIR / "tb_samp_pack.sv",
         consumes=["samp_pack_source", "samp_pack_tb_source", "samp_pack_vectors"],
         sim_artifact="samp_pack_sim",
-        outputs={"samp_pack_sv": Path("vectors/samp_pack_sv.txt")},
+        outputs={"samp_pack_sv": Path("vectors/samp_pack_sv.csv")},
         sim_dir=Path("sim/samp_pack"),
         plusargs={"vecdir": Path("vectors")},
     ))

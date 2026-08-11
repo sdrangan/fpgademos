@@ -45,6 +45,12 @@ dependencies = [
   # transitively via scikit-learn, so it is not listed here. That is luck
   # rather than design and should still be fixed upstream.
   "matplotlib>=3.7",
+
+  # Test vectors are exchanged with SystemVerilog as CSV, written and read with
+  # pandas (demos/datatypes, labs/cubic). This was previously undeclared and
+  # happened to be present in the course venv -- a fresh install would have
+  # failed on `import pandas` in labs/cubic/run_tests.py.
+  "pandas>=2.0",
 ]
 
 [tool.setuptools]

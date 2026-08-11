@@ -43,7 +43,7 @@ Every step declares what it **consumes** and what it **produces**:
 class IntProdGenStep(BuildStep):
     description = "Python golden model for int_prod; writes the stimulus and expected outputs."
     consumes = ["int_prod_source"]
-    produces = {"int_prod_vectors": Path("vectors/int_prod_in.txt")}
+    produces = {"int_prod_vectors": Path("vectors/int_prod_in.csv")}
 
     def run(self, config, **_):
         return {"int_prod_vectors": gen_int_prod_vectors(config.root_dir / "vectors")}
@@ -80,7 +80,7 @@ def build_datatypes_dag() -> BuildDag:
         tb=_SOURCE_DIR / "tb_int_prod.sv",
         consumes=["int_prod_source", "int_prod_tb_source", "int_prod_vectors"],
         sim_artifact="int_prod_sim",
-        outputs={"int_prod_sv": Path("vectors/int_prod_sv.txt")},
+        outputs={"int_prod_sv": Path("vectors/int_prod_sv.csv")},
         sim_dir=Path("sim/int_prod"),
         plusargs={"vecdir": Path("vectors")},
     ))
@@ -178,7 +178,7 @@ int_prod_source:
     int_prod.sv
     UP-TO-DATE
 int_prod_gen:
-    vectors\int_prod_in.txt
+    vectors\int_prod_in.csv
     RUNNING...
     PASSED
 ~~~

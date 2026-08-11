@@ -2,8 +2,10 @@
 // -----------------------------------------------------------------------------
 // Testbench: tb_int_prod
 // Description:
-//   Reads (a, b) pairs from a vector file, drives int_prod with each, and
-//   writes every output back out so the Python side can check them.
+//   Reads (a, b) pairs from a CSV, drives int_prod with each, and writes every
+//   output back out as CSV so the Python side can check them.  The files are
+//   written and read with pandas at the other end, which is the same exchange
+//   format used by the labs.
 //
 //   There is no clock here.  int_prod is combinational, so the testbench just
 //   applies a value, waits for the logic to settle (#1), and reads the result.
@@ -30,7 +32,7 @@ module tb_int_prod;
         .overflow(overflow), .hi_nonzero(hi_nonzero)
     );
 
-    string vecdir;
+    string vecdir, header;
     int    fin, fout;
     int    code, n;
     int    av, bv;
@@ -39,34 +41,38 @@ module tb_int_prod;
         if (!$value$plusargs("vecdir=%s", vecdir))
             vecdir = "../../vectors";
 
-        fin = $fopen({vecdir, "/int_prod_in.txt"}, "r");
+        fin = $fopen({vecdir, "/int_prod_in.csv"}, "r");
         if (fin == 0) begin
-            $display("FATAL: cannot open %s/int_prod_in.txt", vecdir);
+            $display("FATAL: cannot open %s/int_prod_in.csv", vecdir);
             $fatal(1);
         end
 
-        fout = $fopen({vecdir, "/int_prod_sv.txt"}, "w");
+        fout = $fopen({vecdir, "/int_prod_sv.csv"}, "w");
         if (fout == 0) begin
-            $display("FATAL: cannot open %s/int_prod_sv.txt for writing", vecdir);
+            $display("FATAL: cannot open %s/int_prod_sv.csv for writing", vecdir);
             $fatal(1);
         end
 
-        // Column header, so the file is readable on its own.
-        $fwrite(fout, "a b prod hi lo trunc sat overflow hi_nonzero\n");
+        // The first line of a CSV is the column names, not data.  Read it and
+        // throw it away before the loop starts.
+        code = $fgets(header, fin);
+
+        // Write our own header, so pandas can read this file back by name.
+        $fwrite(fout, "a,b,prod,hi,lo,trunc,sat,overflow,hi_nonzero\n");
 
         $display("  a     b  |            prod       hi       lo |  trunc    sat  ovf  hi!=0");
         $display("-----------+----------------------------------+---------------------------");
 
         n = 0;
         while (!$feof(fin)) begin
-            code = $fscanf(fin, "%d %d\n", av, bv);
+            code = $fscanf(fin, "%d,%d\n", av, bv);
             if (code != 2) break;
 
             a = av[W-1:0];
             b = bv[W-1:0];
             #1;   // let the combinational logic settle
 
-            $fwrite(fout, "%0d %0d %0d %0d %0d %0d %0d %0d %0d\n",
+            $fwrite(fout, "%0d,%0d,%0d,%0d,%0d,%0d,%0d,%0d,%0d\n",
                     a, b, prod, hi, lo, trunc, sat, overflow, hi_nonzero);
 
             // Print the first few in binary as well as decimal.  In decimal the
@@ -79,7 +85,7 @@ module tb_int_prod;
         end
 
         $display("-----------+----------------------------------+---------------------------");
-        $display("wrote %0d rows to %s/int_prod_sv.txt", n, vecdir);
+        $display("wrote %0d rows to %s/int_prod_sv.csv", n, vecdir);
 
         $fclose(fin);
         $fclose(fout);

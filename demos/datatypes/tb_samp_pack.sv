@@ -2,8 +2,8 @@
 // -----------------------------------------------------------------------------
 // Testbench: tb_samp_pack
 // Description:
-//   Reads 100 (time, real, imag) samples from a vector file, packs each into a
-//   32-bit word, unpacks it again, and writes everything back out.
+//   Reads 100 (time, real, imag) samples from a CSV, packs each into a 32-bit
+//   word, unpacks it again, and writes everything back out as CSV.
 //
 //   Two independent things get checked on the Python side:
 //     1. the word this testbench builds matches the word Python built
@@ -29,7 +29,7 @@ module tb_samp_pack;
         .t_out(t_out), .re_out(re_out), .im_out(im_out), .re_bad(re_bad)
     );
 
-    string vecdir;
+    string vecdir, header;
     int    fin, fout;
     int    code, n, errors;
     int    tv, rev, imv;
@@ -38,19 +38,24 @@ module tb_samp_pack;
         if (!$value$plusargs("vecdir=%s", vecdir))
             vecdir = "../../vectors";
 
-        fin = $fopen({vecdir, "/samp_pack_in.txt"}, "r");
+        fin = $fopen({vecdir, "/samp_pack_in.csv"}, "r");
         if (fin == 0) begin
-            $display("FATAL: cannot open %s/samp_pack_in.txt", vecdir);
+            $display("FATAL: cannot open %s/samp_pack_in.csv", vecdir);
             $fatal(1);
         end
 
-        fout = $fopen({vecdir, "/samp_pack_sv.txt"}, "w");
+        fout = $fopen({vecdir, "/samp_pack_sv.csv"}, "w");
         if (fout == 0) begin
-            $display("FATAL: cannot open %s/samp_pack_sv.txt for writing", vecdir);
+            $display("FATAL: cannot open %s/samp_pack_sv.csv for writing", vecdir);
             $fatal(1);
         end
 
-        $fwrite(fout, "t re im word t_out re_out im_out re_bad\n");
+        // The first line of a CSV is the column names, not data.  Read it and
+        // throw it away before the loop starts.
+        code = $fgets(header, fin);
+
+        // Write our own header, so pandas can read this file back by name.
+        $fwrite(fout, "t,re,im,word,t_out,re_out,im_out,re_bad\n");
 
         $display("   t     re     im |     word (hex) | t_out  re_out  im_out |  re_bad");
         $display("-------------------+----------------+-----------------------+---------");
@@ -58,7 +63,7 @@ module tb_samp_pack;
         n      = 0;
         errors = 0;
         while (!$feof(fin)) begin
-            code = $fscanf(fin, "%d %d %d\n", tv, rev, imv);
+            code = $fscanf(fin, "%d,%d,%d\n", tv, rev, imv);
             if (code != 3) break;
 
             t_in  = tv[TW-1:0];
@@ -66,7 +71,7 @@ module tb_samp_pack;
             im_in = imv[DW-1:0];
             #1;   // let the combinational logic settle
 
-            $fwrite(fout, "%0d %0d %0d %0d %0d %0d %0d %0d\n",
+            $fwrite(fout, "%0d,%0d,%0d,%0d,%0d,%0d,%0d,%0d\n",
                     t_in, re_in, im_in, word, t_out, re_out, im_out, re_bad);
 
             // The round-trip property, checked here as well as in Python: what
@@ -85,7 +90,7 @@ module tb_samp_pack;
         end
 
         $display("-------------------+----------------+-----------------------+---------");
-        $display("wrote %0d rows to %s/samp_pack_sv.txt", n, vecdir);
+        $display("wrote %0d rows to %s/samp_pack_sv.csv", n, vecdir);
         $display("note: re_bad differs from re_out on exactly the negative samples.");
 
         $fclose(fin);

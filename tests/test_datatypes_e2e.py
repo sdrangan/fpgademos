@@ -58,11 +58,11 @@ class TestFailureIsLoud:
         """The check step is the gate; it must raise rather than pass quietly."""
         _run_through(datatypes, tmp_path, "samp_pack_check")
 
-        sv = tmp_path / "vectors" / "samp_pack_sv.txt"
+        sv = tmp_path / "vectors" / "samp_pack_sv.csv"
         lines = sv.read_text(encoding="utf-8").splitlines()
-        parts = lines[1].split()
+        parts = lines[1].split(",")
         parts[1] = str(int(parts[1]) + 1)          # corrupt one value
-        lines[1] = " ".join(parts)
+        lines[1] = ",".join(parts)
         sv.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
         with pytest.raises(RuntimeError, match="STOP"):

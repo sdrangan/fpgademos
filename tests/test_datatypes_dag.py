@@ -71,7 +71,7 @@ class TestArtifactPaths:
         """Not just the scratch directory: a run that died still leaves sim/ behind."""
         for name in ("int_prod_sim", "samp_pack_sim"):
             step = next(s for s in dag.steps() if s.name == name)
-            assert any("_sv.txt" in str(p) for p in step.produces.values()), \
+            assert any("_sv.csv" in str(p) for p in step.produces.values()), \
                 f"{name} does not declare its testbench output"
 
     def test_doc_steps_write_into_the_tracked_images_directory(self, dag, datatypes):

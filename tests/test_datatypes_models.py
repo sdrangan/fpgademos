@@ -159,25 +159,25 @@ class TestGeneratedVectors:
         a, b = tmp_path / "a", tmp_path / "b"
         datatypes.gen_samp_pack_vectors(a)
         datatypes.gen_samp_pack_vectors(b)
-        assert (a / "samp_pack_in.txt").read_bytes() == (b / "samp_pack_in.txt").read_bytes()
-        assert (a / "samp_pack_golden.txt").read_bytes() == (b / "samp_pack_golden.txt").read_bytes()
+        assert (a / "samp_pack_in.csv").read_bytes() == (b / "samp_pack_in.csv").read_bytes()
+        assert (a / "samp_pack_golden.csv").read_bytes() == (b / "samp_pack_golden.csv").read_bytes()
 
     def test_edge_cases_are_present(self, datatypes, tmp_path):
         datatypes.gen_samp_pack_vectors(tmp_path)
-        rows = (tmp_path / "samp_pack_in.txt").read_text(encoding="utf-8").split("\n")
-        res = {int(r.split()[1]) for r in rows if r.strip()}
+        rows = (tmp_path / "samp_pack_in.csv").read_text(encoding="utf-8").splitlines()[1:]
+        res = {int(r.split(",")[1]) for r in rows if r.strip()}
         assert {-2048, 2047, 0, -1} <= res
 
     def test_timestamp_is_a_counter_not_noise(self, datatypes, tmp_path):
         datatypes.gen_samp_pack_vectors(tmp_path)
-        rows = [r for r in (tmp_path / "samp_pack_in.txt").read_text(
-            encoding="utf-8").split("\n") if r.strip()]
-        assert [int(r.split()[0]) for r in rows] == list(range(len(rows)))
+        rows = [r for r in (tmp_path / "samp_pack_in.csv").read_text(
+            encoding="utf-8").splitlines()[1:] if r.strip()]
+        assert [int(r.split(",")[0]) for r in rows] == list(range(len(rows)))
 
     def test_int_prod_vectors_round_trip_through_the_file(self, datatypes, tmp_path):
         datatypes.gen_int_prod_vectors(tmp_path)
-        text = (tmp_path / "int_prod_golden.txt").read_text(encoding="utf-8")
-        header = text.splitlines()[0].split()
+        text = (tmp_path / "int_prod_golden.csv").read_text(encoding="utf-8")
+        header = text.splitlines()[0].split(",")
         assert header == ["a", "b", "prod", "hi", "lo", "trunc", "sat", "overflow", "hi_nonzero"]
 
 

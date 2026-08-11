@@ -83,11 +83,13 @@ class TestDocsMatchTheCode:
     #: Fragments quoted in steps.md / python.md that must still exist verbatim.
     QUOTED = [
         'consumes = ["int_prod_source"]',
-        'produces = {"int_prod_vectors": Path("vectors/int_prod_in.txt")}',
+        'produces = {"int_prod_vectors": Path("vectors/int_prod_in.csv")}',
         'dag.add(SourceStep(artifact="int_prod_source"',
-        'outputs={"int_prod_sv": Path("vectors/int_prod_sv.txt")}',
+        'outputs={"int_prod_sv": Path("vectors/int_prod_sv.csv")}',
         'plusargs={"vecdir": Path("vectors")}',
         "def wrap(value, width: int):",
+        'golden.to_csv(vec_dir / "int_prod_golden.csv", index=False)',
+        'diff = golden.compare(actual, result_names=("python", "systemverilog"))',
         "def saturate(value, width: int):",
         '"overflow": (prod != trunc).astype(np.int64),',
     ]

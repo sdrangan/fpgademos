@@ -89,37 +89,58 @@ space is a different kind of tool from one you run on six cases.
 
 ## How the model reaches the hardware
 
-The model does not talk to the simulator directly.  It writes **test vectors**:
+The model does not talk to the simulator directly.  It writes **test vectors** as
+CSV, using a pandas `DataFrame`:
 
 ~~~python
 def gen_int_prod_vectors(vec_dir, width=8):
     a, b = int_prod_inputs(width)
     model = int_prod_model(a, b, width)
 
-    # the stimulus the testbench will read
-    (vec_dir / "int_prod_in.txt").write_text(
-        "".join(f"{x} {y}\n" for x, y in zip(a, b)))
+    # every column the testbench will report, and what it should contain
+    golden = pd.DataFrame({c: np.asarray(model[c], dtype=np.int64) for c in INT_PROD_COLS})
+    golden.to_csv(vec_dir / "int_prod_golden.csv", index=False)
 
-    # what the answers should be
-    cols = ["a", "b", "prod", "hi", "lo", "trunc", "sat", "overflow", "hi_nonzero"]
-    rows = ["  ".join(str(int(model[c][i])) for c in cols) for i in range(len(a))]
-    (vec_dir / "int_prod_golden.txt").write_text(" ".join(cols) + "\n" + "\n".join(rows))
+    # the stimulus is just the input columns of the same table
+    golden[["a", "b"]].to_csv(vec_dir / "int_prod_in.csv", index=False)
 ~~~
 
-Two files: the inputs, and the expected outputs.  The testbench reads the first,
-drives the module, and writes what it got.  A separate step compares that against
-the second, row by row, and stops the build on the first disagreement.
+Two files: the inputs, and the expected outputs — and notice the second is a
+slice of the first table rather than a separately-built thing, so they cannot
+disagree about what was asked.
+
+The testbench reads the stimulus, drives the module, and writes what it got as a
+CSV of its own.  A separate step reads both back and compares them:
 
 ~~~
-    int_prod_gen  ──> int_prod_in.txt      ──> [SystemVerilog] ──> int_prod_sv.txt
-         └──────────> int_prod_golden.txt  ─────────────────────────────┐
+    int_prod_gen  ──> int_prod_in.csv      ──> [SystemVerilog] ──> int_prod_sv.csv
+         └──────────> int_prod_golden.csv  ─────────────────────────────┐
                                                                         v
                                                               int_prod_check
 ~~~
 
-Plain text files, on purpose.  You can open them, read them, and see exactly what
-was asked and what came back — and so can a debugger, a spreadsheet, or a
-classmate helping you at 2am.
+~~~python
+diff = golden.compare(actual, result_names=("python", "systemverilog"))
+~~~
+
+`DataFrame.compare` returns only the cells that differ, which is more useful than
+the first mismatch alone: if a width is wrong somewhere, you see an entire column
+light up rather than one row.
+
+CSV is worth a word.  It is what the rest of the course uses, so the pattern you
+learn here is the one the labs expect.  pandas reads and writes it in a line at
+each end.  SystemVerilog reads it with `$fscanf` — the format string just needs
+commas in it — and the header row means the columns are matched **by name**, so
+the testbench and the model cannot quietly drift into different orders.  And you
+can open the file in a spreadsheet, or read it over someone's shoulder at 2am,
+which is not nothing.
+
+The one wrinkle on the SystemVerilog side is that the header is not data:
+
+~~~systemverilog
+    // The first line of a CSV is the column names.  Read it and throw it away.
+    code = $fgets(header, fin);
+~~~
 
 ## Two ways to check an answer
 
