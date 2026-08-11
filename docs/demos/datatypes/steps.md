@@ -10,11 +10,19 @@ has_children: false
 Hardware is not built in one go.  Even a small design goes through a sequence of
 stages, and each stage consumes what the previous one produced:
 
-~~~
-    model in Python  ->  generate test vectors  ->  write the RTL
-        ->  simulate  ->  compare against the model  ->  synthesise
-        ->  check timing and resources  ->  ...
-~~~
+```mermaid
+flowchart LR
+    A["model in<br/>Python"] --> B["generate<br/>test vectors"]
+    B --> C["write<br/>the RTL"]
+    C --> D["simulate"]
+    D --> E["compare against<br/>the model"]
+    E --> F["synthesise"]
+    F --> G["check timing<br/>and resources"]
+    G --> H["..."]
+
+    classDef stage fill:#f6f2e8,stroke:#b9975b,color:#123
+    class A,B,C,D,E,F,G,H stage
+```
 
 The stages are slow and uneven.  Python modelling takes seconds; a simulation
 takes minutes; synthesis can take an hour.  So you almost never want to run the
@@ -104,10 +112,22 @@ produced.
 
 The result for this demo is two independent chains:
 
-~~~
-int_prod_source  ─→ int_prod_gen  ─→ int_prod_sim  ─→ int_prod_check  ─→ int_prod_docs
-samp_pack_source ─→ samp_pack_gen ─→ samp_pack_sim ─→ samp_pack_check ─→ samp_pack_docs
-~~~
+```mermaid
+flowchart LR
+    subgraph ip [int_prod]
+        direction LR
+        ips["int_prod_source"] --> ipg["int_prod_gen"] --> ipm["int_prod_sim"]
+        ipm --> ipc["int_prod_check"] --> ipd["int_prod_docs"]
+    end
+    subgraph sp [samp_pack]
+        direction LR
+        sps["samp_pack_source"] --> spg["samp_pack_gen"] --> spm["samp_pack_sim"]
+        spm --> spc["samp_pack_check"] --> spd["samp_pack_docs"]
+    end
+
+    classDef step fill:#f6f2e8,stroke:#b9975b,color:#123
+    class ips,ipg,ipm,ipc,ipd,sps,spg,spm,spc,spd step
+```
 
 They never touch each other, which is exactly why this is a graph and not a list.
 Asking for a `samp_pack` stage runs nothing from `int_prod` at all.

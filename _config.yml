@@ -40,6 +40,13 @@ exclude:
   - requirements-dev.txt
   - pyproject.toml
 
+# Mermaid diagrams. Without this block, ```mermaid fences render as plain code
+# blocks rather than diagrams -- just-the-docs only loads the library when a
+# version is pinned here. The version is fetched from the jsdelivr CDN at page
+# load; check https://data.jsdelivr.com/v1/package/npm/mermaid before bumping it.
+mermaid:
+  version: "11.16.1"
+
 # Markdown options
 markdown: kramdown
 kramdown:

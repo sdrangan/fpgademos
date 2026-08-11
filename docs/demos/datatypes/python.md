@@ -112,12 +112,29 @@ disagree about what was asked.
 The testbench reads the stimulus, drives the module, and writes what it got as a
 CSV of its own.  A separate step reads both back and compares them:
 
-~~~
-    int_prod_gen  ──> int_prod_in.csv      ──> [SystemVerilog] ──> int_prod_sv.csv
-         └──────────> int_prod_golden.csv  ─────────────────────────────┐
-                                                                        v
-                                                              int_prod_check
-~~~
+```mermaid
+flowchart LR
+    gen["int_prod_gen<br/>the Python model"]
+    stim[("int_prod_in.csv<br/>the questions")]
+    golden[("int_prod_golden.csv<br/>the answers")]
+    sim["int_prod_sim<br/>SystemVerilog"]
+    got[("int_prod_sv.csv<br/>what the RTL said")]
+    check{{"int_prod_check<br/>do they agree?"}}
+
+    gen --> stim
+    gen --> golden
+    stim --> sim
+    sim --> got
+    got --> check
+    golden --> check
+
+    classDef data fill:#eef4fb,stroke:#5b8cbe,color:#123
+    classDef step fill:#f6f2e8,stroke:#b9975b,color:#123
+    classDef gate fill:#eaf5ec,stroke:#5a9367,color:#123
+    class stim,golden,got data
+    class gen,sim step
+    class check gate
+```
 
 ~~~python
 diff = golden.compare(actual, result_names=("python", "systemverilog"))

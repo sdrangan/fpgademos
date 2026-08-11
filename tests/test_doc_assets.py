@@ -12,6 +12,7 @@ Two things have to hold for that, and both are easy to break by accident:
 """
 from __future__ import annotations
 
+import re
 import subprocess
 
 import pytest
@@ -146,6 +147,47 @@ class TestDocsMatchTheCode:
             orders.setdefault(order, []).append(page.name)
         clashes = {k: v for k, v in orders.items() if len(v) > 1}
         assert not clashes, f"pages share a nav_order: {clashes}"
+
+
+class TestMermaidDiagrams:
+    """just-the-docs only loads Mermaid when a version is pinned in _config.yml.
+
+    Without it the ```mermaid fences render as plain code blocks -- the diagrams
+    do not error, they just quietly turn back into text, which is the kind of
+    regression nobody notices until a student mentions it.
+    """
+
+    def _blocks(self):
+        import re
+        pages = REPO_ROOT / "docs" / "demos" / "datatypes"
+        for page in sorted(pages.glob("*.md")):
+            text = page.read_text(encoding="utf-8")
+            for src in re.findall(r"```mermaid\r?\n(.*?)```", text, re.DOTALL):
+                yield page.name, src
+
+    def test_config_pins_a_mermaid_version(self):
+        config = (REPO_ROOT / "_config.yml").read_text(encoding="utf-8")
+        assert "mermaid:" in config, "_config.yml does not enable Mermaid"
+        assert re.search(r"mermaid:\s*\n\s*version:\s*\"[\d.]+\"", config), \
+            "Mermaid is enabled but no version is pinned; just-the-docs will not load it"
+
+    def test_pages_actually_use_mermaid(self):
+        assert list(self._blocks()), "no Mermaid blocks found — did a page lose its diagram?"
+
+    def test_every_block_declares_a_diagram_type(self):
+        known = ("flowchart", "graph", "sequenceDiagram", "classDiagram",
+                 "stateDiagram", "erDiagram", "gantt", "pie", "block-beta")
+        bad = [(name, src.strip().splitlines()[0])
+               for name, src in self._blocks()
+               if not src.strip().startswith(known)]
+        assert not bad, f"Mermaid blocks with no recognised diagram type: {bad}"
+
+    def test_no_unclosed_fences(self):
+        for page in (REPO_ROOT / "docs" / "demos" / "datatypes").glob("*.md"):
+            text = page.read_text(encoding="utf-8")
+            assert text.count("```mermaid") == len(
+                re.findall(r"```mermaid\r?\n.*?```", text, re.DOTALL)), \
+                f"{page.name} has an unclosed ```mermaid fence"
 
 
 class TestBuildScriptIsRunnable:
