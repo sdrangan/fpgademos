@@ -197,3 +197,10 @@ extra/
 
 
 
+
+# datatypes demo (Unit 1): generated build products. The vectors alone are ~5 MB
+# (the int_prod sweep covers all 65,536 input pairs), and everything here is
+# reproducible with `python datatypes_build.py`. The figures under
+# docs/demos/datatypes/images/ ARE tracked -- they are what the docs display.
+demos/datatypes/vectors/
+demos/datatypes/results/

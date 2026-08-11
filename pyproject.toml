@@ -35,13 +35,11 @@ dependencies = [
   "jupyterlab>=4.0",
   "ipykernel>=6.0",
 
-  # STOPGAP -- remove once waveflow declares it upstream.
-  # waveflow imports matplotlib (waveflow/utils/timing.py, utils/vcd.py,
-  # calib/calib.py) but omits it from its own dependencies. Verified against a
-  # clean install from GitHub on 2026-08-05: "from waveflow.utils.timing import
-  # TimingDiagram" raises ModuleNotFoundError: No module named 'matplotlib'.
-  # Declaring it here unblocks the course; the real fix is upstream, since
-  # anyone installing waveflow alone still hits it.
+  # Was a stopgap for waveflow importing matplotlib without declaring it; that
+  # was fixed upstream on 2026-08-10 (waveflow commit a95edfb, "fix(deps):
+  # declare matplotlib and vcdvcd"). It stays here on its own merits: the demos
+  # plot directly (demos/datatypes/datatypes_build.py), so this is now a genuine
+  # first-party dependency rather than someone else's omission.
   #
   # waveflow also imports scipy without declaring it, but scipy arrives
   # transitively via scikit-learn, so it is not listed here. That is luck
@@ -62,3 +60,20 @@ include = ["hwdesign*"]
 # Console scripts: the old pysilicon entry points are intentionally dropped during
 # the migration. Re-add only genuinely course-specific scripts here as units are
 # integrated; general tooling now lives in waveflow (waveflow.scripts.*).
+
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+# The suite is tiered by what it needs to run. Tiers 0 and 1 are pure Python and
+# run anywhere in a couple of seconds; they are the canary for waveflow API drift,
+# which matters because waveflow is installed editable from a clone that is
+# actively developed -- the demos can break without this repo changing at all.
+# Tier 2 drives Vivado and is skipped when xvlog is not on PATH.
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "vivado: requires a Vivado installation (runs xvlog/xelab/xsim; slow)",
+    "slow: takes minutes rather than seconds (e.g. the exhaustive 65k-row sweep)",
+]
