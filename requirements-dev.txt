@@ -17,3 +17,9 @@
 
 -e ../pysilicon      # waveflow (editable; folder kept the old pysilicon name)
 -e .                 # hwdesign (this repo)
+
+# Test runner. The suite matters more than usual here: because waveflow above is
+# installed *editable* from a clone under active development, a change there can
+# break this repo's demos without anything in this repo changing. Running
+# `pytest` is how that gets caught.
+pytest>=8.0
