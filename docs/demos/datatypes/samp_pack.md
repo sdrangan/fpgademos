@@ -1,7 +1,7 @@
 ---
 title: Packing a Data Structure
 parent: Integers, Overflow and Bit Packing
-nav_order: 2
+nav_order: 4
 has_children: false
 ---
 
@@ -94,11 +94,10 @@ checks two separate claims:
    word Python built.
 2. **Round trip.** `unpack(pack(x)) == x`, for every sample.
 
-The second one is a different kind of check from anything in `int_prod`.  It is
-a **property** — a statement that must hold for all inputs — rather than a
-comparison against a stored list of expected answers.  Properties are often
-easier to be confident in than golden values, because you do not have to trust
-that the golden values were right in the first place.
+The second one is a different kind of check from anything in `int_prod`: a
+**property**, holding for all inputs, rather than a comparison against stored
+answers.  See [two ways to check an answer](./python.md#two-ways-to-check-an-answer)
+for why it is worth reaching for a property whenever you can state one.
 
 The vectors deliberately include the awkward cases: the most negative value
 (`-2048`), the most positive (`2047`), zero, and `-1`.  The first rows the
@@ -134,11 +133,7 @@ real part would run straight over the timestamp above it.
 SystemVerilog needs no masks here at all, because the field widths are declared
 and the language does the truncation for you.
 
-That is the general shape of the difference between the two, and it is worth
-carrying forward:
-
-* **Python** keeps every bit unless you explicitly remove them.
-* **SystemVerilog** removes every bit that does not fit, without telling you.
-
-Neither default is wrong.  But they are opposites, and when a Python model and
-an RTL implementation disagree, this is very often why.
+That is the general shape of the difference — Python keeps every bit unless you
+remove it, SystemVerilog removes every bit that does not fit — and it is the
+single most common reason a model and an RTL implementation disagree.  It is
+covered in [where Python will trip you](./python.md#where-python-will-trip-you).

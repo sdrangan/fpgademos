@@ -1,7 +1,7 @@
 ---
 title: The Integer Product
 parent: Integers, Overflow and Bit Packing
-nav_order: 1
+nav_order: 2
 has_children: false
 ---
 
@@ -175,4 +175,4 @@ work", but equivalent, over the entire input space.
 
 ---
 
-Go to [packing a data structure](./samp_pack.md).
+Go to [the Python golden model](./python.md).
