@@ -4,7 +4,6 @@ parent: Pseudorandom Number Generator
 nav_order: 4
 has_children: false
 ---
-
 # Stage 3: the SystemVerilog
 
 ```bash
@@ -16,17 +15,45 @@ You write two things here: the state update in `prng_next.sv`, and the loop in
 the simulation and compares its output with **your own** Python model, sample for
 sample — the two languages have to agree.
 
+## The two files, and why there are two
+
+Hardware is almost always written as a pair: the thing you are building, and a
+separate program that exercises it.
+
+**`prng_next.sv` is the design under test — the DUT.** It is the hardware. Every
+line in it has to be something that could become real logic on a chip: gates,
+wires, registers. Nothing in it reads files, prints, or waits for a while.
+
+**`tb_prng.sv` is the testbench.** It is not hardware and is never synthesised.
+Its whole job is to *drive* the DUT — make up inputs, apply them, look at what
+comes out, and write the results somewhere you can check them. Because it never
+becomes a circuit, it can do things hardware cannot: open files, print, and take
+an arbitrary number of steps in an `initial` block.
+
+The relationship is the same one you already have in Python. `prng_next()` is the
+algorithm; `lfsr_stream()` is the harness that calls it repeatedly and collects
+the answers. Here `prng_next` is the module and the testbench is the harness.
+
+In this lab the DUT is *one step* of the LFSR and the testbench does the
+iterating — it calls the DUT `BITS` times per sample, feeding each output back in
+as the next input. That split is deliberate. Iterating inside the hardware needs
+a clock and registers, which is **sequential logic**, and that is Unit 2. Once
+you have it, the same generator becomes a module that advances itself once per
+clock edge and the testbench shrinks to almost nothing.
+
+So for now: everything that repeats lives in the testbench, and the DUT is pure
+combinational logic that computes one answer from one input.
+
 ## The state update, in `prng_next.sv`
 
-`prng_next.sv` is a module with two ports and no clock:
+You get the module's shell. The ports and the body are yours:
 
 ```systemverilog
 module prng_next #(
     parameter int WIDTH = 16,
     parameter logic [15:0] TAPS = 16'hD008
 )(
-    input  logic [WIDTH-1:0] state_in,
-    output logic [WIDTH-1:0] state_out
+    // your port declarations here
 );
 
     always_comb begin
@@ -39,6 +66,32 @@ endmodule
 Purely combinational — no `always_ff`, no clock, no reset, no state of its own.
 It is a function written in hardware: give it a state, it gives you the next one.
 The sequencing lives in the testbench.
+
+### Declaring the ports
+
+A module's port list is its interface: the wires that cross the boundary between
+this block and whatever instantiates it. Each one needs three things — a
+**direction**, a **type**, and a **width**:
+
+```systemverilog
+    direction  type  [range]  name
+```
+
+You need two ports. The testbench drives one and reads the other, so one is an
+`input` and one is an `output`. Both carry a whole LFSR state, so both are
+`WIDTH` bits wide — write the range in terms of `WIDTH` rather than as `[15:0]`,
+so that changing the parameter changes the ports with it.
+
+Ports are separated by commas, with no comma after the last one. The names have
+to be the ones the testbench already uses; look at how it instantiates the module
+and you will find them.
+
+{: .note }
+> Getting a width wrong here does not usually produce an error. SystemVerilog
+> will happily connect a 16-bit signal to an 8-bit port and quietly discard the
+> top half. It is the same silent truncation as the discarded product in the
+> [datatypes demo](../../demos/datatypes/), and it is why widths are worth
+> checking by hand rather than trusting.
 
 ### Two operators you need
 
@@ -135,6 +188,71 @@ Note what this stage does *not* check: whether the thing you built is any good.
 Two implementations can agree perfectly and both be wrong — which is exactly why
 [the evaluation stage](./evaluate.md) comes before this one.
 
-----
+## Running the simulator yourself
+
+`prng_build.py` calls the simulator for you through a Waveflow helper,
+`run_sv_sim`. That helper does nothing magic — it shells out to three Vivado
+command-line tools in a scratch directory and raises an error if any of them
+exits non-zero.
+
+It is worth doing by hand at least once. Waveflow is this course's convenience,
+not an industry standard; nobody at your next job will have heard of it. The
+tools underneath are the ones everybody uses, and being able to drive them
+directly is what lets you debug when a script does something you did not expect.
+
+### The three commands
+
+From the lab directory:
+
+```powershell
+# Put the Vivado tools on PATH for this shell (adjust for your install)
+$env:PATH = "C:\Xilinx\2025.1\Vivado\bin;$env:PATH"
+
+mkdir sim\manual\logs -Force
+cd sim\manual
+
+# 1. Compile: parse the SystemVerilog into a library called `work`
+xvlog -sv ..\..\prng_next.sv ..\..\tb_prng.sv
+
+# 2. Elaborate: link the modules into a runnable snapshot named tb_prng_sim
+xelab tb_prng -s tb_prng_sim -debug typical -log logs/xelab.log
+
+# 3. Run it, passing the values the testbench reads with $value$plusargs
+xsim --% tb_prng_sim --runall -log logs/xsim.log -testplusarg "vecdir=." -testplusarg "nsamp=1000" -testplusarg "seed=45242"
+```
+
+You should see the first eight samples printed and `prng_sv.csv` written into the
+directory you ran from.
+
+The three steps map onto compiling a C program: `xvlog` is the compiler,
+`xelab` is the linker, and `xsim` runs the resulting binary. `tb_prng` is named
+in step 2 because the *testbench* is the top of the hierarchy — it instantiates
+the DUT, not the other way round.
+
+{: .note }
+> The `--%` in the `xsim` line is PowerShell's stop-parsing token, and without it
+> the `-testplusarg "name=value"` pairs are mangled before the tool ever sees
+> them. On Linux, macOS, or in `cmd`, drop it. `45242` is `0xB0BA`, the seed —
+> `$value$plusargs("seed=%d", ...)` reads decimal.
+
+### What Waveflow adds
+
+Nothing you could not type. It resolves where the Vivado binaries live so you do
+not have to source `settings64`, makes and cleans the scratch directory, converts
+path plusargs to forward slashes (a Windows backslash arrives at
+`$value$plusargs` with `\r` read as a carriage return), checks that the testbench
+actually wrote the files it promised, and raises with the log path when a step
+fails.
+
+That last one matters more than it sounds: **xsim exits 0 even after `$fatal`**.
+A testbench that could not open its input file will report success to the shell.
+Anything driving these tools from a script has to check the outputs rather than
+the exit code — which is a thing worth knowing whatever tooling you end up using.
+
+Once a design gets past a few files, everyone automates this. The wrapper is a
+Makefile, a TCL script, or a Python harness depending on the shop, but the three
+commands underneath are the same ones above.
+
+---
 
 Go to [grading and submission](./submit.md)

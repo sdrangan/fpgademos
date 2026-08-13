@@ -20,8 +20,14 @@ module prng_next #(
     parameter int WIDTH = 16,
     parameter logic [15:0] TAPS = 16'hD008   // bits 15, 14, 12 and 3
 )(
-    input  logic [WIDTH-1:0] state_in,
-    output logic [WIDTH-1:0] state_out
+    // TODO:  Declare this module's two ports.
+    //
+    // The testbench drives `state_in` and reads `state_out`, so one is an
+    // input and the other an output.  Both carry a whole LFSR state, so both
+    // are WIDTH bits wide.
+    //
+    // The form is:  direction  type  [range]  name
+    // and the ports are separated by commas, with no comma after the last one.
 );
 
     always_comb begin
