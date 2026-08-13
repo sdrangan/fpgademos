@@ -13,6 +13,7 @@ A tentative set of units is as follows.  The units are still in flux so new mate
   * Lecture:  [[PDF]](https://github.com/sdrangan/hwdesign/tree/main/units/unit01_basic_logic/basic_logic.pdf) [[pptx]](https://github.com/sdrangan/hwdesign/tree/main/units/unit01_basic_logic/basic_logic.pptx)
   * [Review of number systems](../../units/unit01_basic_logic/review_numbers.pptx) from previous class
   * Demo:  [Integers, overflow, and bit packing in SystemVerilog](../demos/datatypes/)
+  * Lab:  [Pseudo-Random number generator](../labs/prng/)
   * [Problems](../../units/unit01_basic_logic/prob/basic_logic.html)
 * Unit 2:  Sequential Logic and Finite State Machines
   * Lecture:  [[PDF]](https://github.com/sdrangan/hwdesign/tree/main/units/unit02_fsm/fsm.pdf) [[pptx]](https://github.com/sdrangan/hwdesign/tree/main/units/unit02_fsm/fsm.pptx)

@@ -10,6 +10,9 @@ As part of the class, we are building a few labs in both SystemVerilog and Vitis
 Unfortunately, we only have a few labs so far.  But, we will add more over the course of the
 semester.
 
+* [Unit 1: Pseudorandom number generation](./prng/)
+   * Build a linear-feedback shift register in Python and SystemVerilog,
+   and check that the two agree sample for sample.
 * [Unit 2: Division with conditional subtraction](./subc/)
    * Implement a simple integer mathematical algorithm in SystemVerilog
    with a FSM and a handshake protocol.
