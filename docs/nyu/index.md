@@ -23,7 +23,7 @@ At the end of the class, students should be already able to build powerful, comp
 
 ## People
 
-The course will be co-taught by:
+The material in this website was developed by:
 
 * [**Prof.  Sundeep Rangan**](https://wireless.engineering.nyu.edu/sundeep-rangan/):
   Sundeep has over 25 years experience in wireless industry in both academia and industry.
@@ -67,6 +67,8 @@ The tenatitve schedule is given in the [course units page](./units.md).
 
 ## Support
 
-The development of this course is supported in part by the NSF award,
-[*NRT: Chips for All: Empowering Researchers from Diverse Disciplines to Design Hardware*](https://www.nsf.gov/awardsearch/show-award?AWD_ID=2345953), a project
-led by PI Siddharth Garg.
+The development of this course is supported in part by:
+
+- NSF [NeTs: Medium: Energy-Efficient and Reconfigurable Wireless Networks through Hardware-Algorithm Co-Design](https://www.nsf.gov/awardsearch/show-award?AWD_ID=2504400), PIs Sundeep Rangan, Co-PIs Elza Erkip, Hamed Rahmani, Brandon Reagen
+- NSF [*NRT: Chips for All: Empowering Researchers from Diverse Disciplines to Design Hardware*](https://www.nsf.gov/awardsearch/show-award?AWD_ID=2345953), PI Siddharth Garg
+
