@@ -66,6 +66,12 @@ include = ["hwdesign*"]
 # Console scripts: the old pysilicon entry points are intentionally dropped during
 # the migration. Re-add only genuinely course-specific scripts here as units are
 # integrated; general tooling now lives in waveflow (waveflow.scripts.*).
+#
+# build_lab_autograder came back from waveflow.scripts: what it packages is this
+# repo's gradescope/ template, which reads this course's autograder_config.xml,
+# so it was course-specific all along and only ended up upstream by accident.
+[project.scripts]
+build_lab_autograder = "hwdesign.scripts.build_lab_autograder:main"
 
 # ---------------------------------------------------------------------------
 # Tests
